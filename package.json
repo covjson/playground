@@ -1,0 +1,35 @@
+{
+  "license": "BSD-3-Clause",
+  "scripts": {
+    "serve": "http-server -p 8081 -c0",
+    "postinstall": "jspm install",
+    "build": "npm run build-src && npm run build-min",
+    "build-src": "jspm bundle-sfx main bundle.src.js --skip-source-maps",
+    "build-min": "jspm bundle-sfx main bundle.min.js --skip-source-maps --minify"
+  },
+  "devDependencies": {
+    "http-server": "^0.8.0",
+    "jspm": "^0.16.15"
+  },
+  "jspm": {
+    "directories": {
+      "baseURL": "public"
+    },
+    "dependencies": {
+      "codemirror": "npm:codemirror@^5.7.0",
+      "covjson-reader": "github:Reading-eScience-Centre/covjson-reader@master",
+      "css": "github:systemjs/plugin-css@^0.1.13",
+      "leaflet": "github:Leaflet/Leaflet@^0.7.5",
+      "leaflet-coverage": "github:Reading-eScience-Centre/leaflet-coverage@master",
+      "leaflet-groupedlayercontrol": "github:ismyrnow/Leaflet.groupedlayercontrol@^0.4.0",
+      "leaflet-loading": "github:ebrelsford/Leaflet.loading@^0.1.16",
+      "minified": "github:timjansen/minified.js@^2015.1.1"
+    },
+    "devDependencies": {
+      "babel": "npm:babel-core@^5.8.24",
+      "babel-runtime": "npm:babel-runtime@^5.8.24",
+      "clean-css": "npm:clean-css@^3.4.8",
+      "core-js": "npm:core-js@^1.1.4"
+    }
+  }
+}

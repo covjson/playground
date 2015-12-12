@@ -1,0 +1,19 @@
+<!doctype html>
+<html>
+<head>
+	<title>leaflet-coverage demo</title>	
+	<script>
+		// use canvas for vector rendering in Leaflet (faster)
+		L_PREFER_CANVAS = true;
+	</script>
+</head>
+<body>
+	<div id="map"></div>
+
+	<script src="jspm_packages/system.js"></script>
+  <script src="config.js"></script>
+	<script>
+	System.import('./main.js')
+	</script>
+</body>
+</html>

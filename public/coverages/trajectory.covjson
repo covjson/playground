@@ -1,0 +1,58 @@
+{
+  "type" : "Coverage",
+  "profile" : "TrajectoryCoverage",
+  "domain" : {
+    "type" : "Domain",
+    "profile" : "Trajectory",
+    "axes": {
+      "composite": {
+        "compositeType": "Simple",
+        "components": ["t","x","y","z"],
+        "values": [
+          ["2010-01-01T00:12:20Z",-10,40,5],
+          ["2010-01-01T00:14:20Z",-5,50,4],
+          ["2010-01-01T00:16:20Z",-6,50,5]
+        ]
+      }
+    },
+    "referencing": [{
+      "identifiers": ["t"],
+      "trs": {
+        "type": "TemporalRS",
+        "calendar": "Gregorian"
+      }
+    }, {
+      "identifiers": ["y","x","z"],
+      "srs": {
+        "type": "GeodeticCRS",
+        "id": "http://www.opengis.net/def/crs/EPSG/0/4979"
+      }
+    }]
+  },
+  "parameters" : {
+    "ICEC": {
+      "type" : "Parameter",
+      "description" : {
+      	"en": "ice"
+      },
+      "unit" : {
+        "symbol" : "fraction"
+      },
+      "observedProperty" : {
+        "id" : "http://foo/sea_ice_concentration",
+        "label" : {
+          "en": "ice"
+        }
+      }
+    }
+  },
+  "ranges" : {
+    "type" : "RangeSet",
+    "ICEC" : {
+      "type" : "Range",
+      "values" : [ 0.1, 0.2, 0.1 ],
+      "validMin" : 0,
+      "validMax" : 1
+    }
+  }
+}
