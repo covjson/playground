@@ -31,9 +31,9 @@
         "en": "Land Cover according to xyz classification"
       },
       "observedProperty" : {
-        "id" : "http://foo/land_cover",
+        "id" : "http://.../landcover1",
         "label" : {
-          "en": "Land Cover"
+          "en": "XYZ Land Cover"
         },
         "categories" : [{
           "id": "http://.../landcover1/categories/grass",
@@ -42,7 +42,8 @@
           },
           "description": {
             "en": "Very green grass."
-          }
+          },
+          "preferredColor": "#01A611"
         }, {
           "id": "http://.../landcover1/categories/rocks",
           "label": {
@@ -50,7 +51,8 @@
           },
           "description": {
             "en": "Just rocks."
-          }
+          },
+          "preferredColor": "#A0A0A0"
         }]
       },
       "categoryEncoding": {
