@@ -7,6 +7,7 @@ import 'leaflet-groupedlayercontrol/dist/leaflet.groupedlayercontrol.min.css!'
 import {$} from 'minified'
 
 import * as CovJSON from 'covjson-reader'
+import * as RestAPI from 'coverage-rest-client'
 import LayerFactory from 'leaflet-coverage'
 
 import Legend from 'leaflet-coverage/controls/Legend.js'
@@ -71,7 +72,10 @@ let layersOnMap = new Set()
   
 function loadCov (url, group=undefined) {
   map.fire('dataloading')
-  CovJSON.read(url).then(cov => {
+  CovJSON.read(url)
+    .then(cov => RestAPI.wrap(cov, {loader: CovJSON.read}))
+    .then(cov => {
+      
     map.fire('dataload')
     console.log('Coverage loaded: ', cov)
     // add each parameter as a layer
