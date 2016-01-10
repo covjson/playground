@@ -28,7 +28,7 @@ let map = L.map('map', {
   center: [10, 0],
   zoom: 2
 })
-
+window.map = map
 let baseLayers = {
   'OSM':
     L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -105,7 +105,8 @@ function loadCov (url, group=undefined) {
         paramSync.addLayer(covLayer)
         
         layersOnMap.add(covLayer)
-        map.fitBounds(L.latLngBounds([...layersOnMap.values()].map(l => l.getBounds())))
+        map.fitBounds(L.latLngBounds([...layersOnMap.values()].map(l => l.getBounds())),
+            { maxZoom: 5 })
       }).on('remove', e => {
         let covLayer = e.target
         layersOnMap.delete(covLayer)
@@ -117,8 +118,13 @@ function loadCov (url, group=undefined) {
       if (cov.domainType.endsWith('Profile')) {
         // we do that outside of the above 'add' handler since we want to register only once,
         // not every time the layer is added to the map
+        let plot
         layer.on('click', () => {
-          new ProfilePlot(cov, opts).addTo(map)
+          plot = new ProfilePlot(cov, opts).addTo(map)
+        }).on('remove', e => {
+          if (plot) {
+            map.removeLayer(plot)
+          }
         })
       }
       
