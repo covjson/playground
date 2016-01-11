@@ -10,7 +10,7 @@
   },
   "devDependencies": {
     "http-server": "^0.8.0",
-    "jspm": "0.16.19"
+    "jspm": "^0.16.21"
   },
   "jspm": {
     "directories": {
