@@ -45,7 +45,8 @@ let layerFactory = LayerFactory()
 let covs = ['coverages/trajectory.covjson',
             'coverages/grid.covjson',
             'coverages/grid-categorical.covjson',
-            'coverages/profile.covjson'
+            'coverages/profile.covjson',
+            'coverages/profile-collection.covjson'
            ]
 
 // We use ParameterSync here so that multiple coverage layers that display the same
@@ -71,6 +72,9 @@ let paramSync = new ParameterSync({
 let layersOnMap = new Set()
   
 function loadCov (url, group=undefined) {
+  if (!group) {
+    group = url
+  }
   map.fire('dataloading')
   CovJSON.read(url)
     .then(cov => RestAPI.wrap(cov, {loader: CovJSON.read}))
@@ -78,70 +82,77 @@ function loadCov (url, group=undefined) {
       
     map.fire('dataload')
     console.log('Coverage loaded: ', cov)
+    
     // add each parameter as a layer
-    // TODO add support for coverage collections
     
-    /*
-    if (cov.parameters.has('LC')) {
-      cov = transform.withCategories(cov, 'LC', [{
-        "id": "http://.../landcover1/categories/grass",
-        "value": 1,
-        "label": new Map([["en", "Grass"]]),
-        "description": new Map([["en", "Very green grass."]])
-      }])
-    }
-    */
-    
-    for (let key of cov.parameters.keys()) {
-      let opts = {keys: [key]}
-      let layer = layerFactory(cov, opts).on('add', e => {
-        let covLayer = e.target
-        console.log('layer added:', covLayer)
-                
-        // This registers the layer with the sync manager.
-        // By doing that, the palette and extent get unified (if existing)
-        // and an event gets fired if a new parameter was added.
-        // See the code above where ParameterSync gets instantiated.
-        paramSync.addLayer(covLayer)
+    if (cov.coverages) {
+      // collection
+      if (!cov.parameters) {
+        throw new Error('Only coverage collections with a "parameters" property are supported')
+      }
+      for (let key of cov.parameters.keys()) {
+        let opts = {keys: [key]}
         
-        layersOnMap.add(covLayer)
-        map.fitBounds(L.latLngBounds([...layersOnMap.values()].map(l => l.getBounds())),
-            { maxZoom: 5 })
-      }).on('remove', e => {
-        let covLayer = e.target
-        layersOnMap.delete(covLayer)
-      }).on('dataLoading', () => map.fire('dataloading'))
-        .on('dataLoad', () => map.fire('dataload'))
-      
-
-      // TODO is this a good way to do that?
-      if (cov.domainType.endsWith('Profile')) {
-        // we do that outside of the above 'add' handler since we want to register only once,
-        // not every time the layer is added to the map
-        let plot
-        layer.on('click', () => {
-          plot = new ProfilePlot(cov, opts).addTo(map)
-        }).on('remove', e => {
-          if (plot) {
-            map.removeLayer(plot)
-          }
-        })
+        let layers = cov.coverages.map(coverage => createLayer(coverage, opts))        
+        let layer = L.layerGroup(layers)
+        layerControl.addOverlay(layer, key, group)
+      }      
+    } else {
+      // single coverage
+      for (let key of cov.parameters.keys()) {
+        let opts = {keys: [key]}
+        let layer = createLayer(cov, opts)
+        
+        // TODO use jsonld to properly query graph (together with using cov.id as reference point)
+        if (cov.ld.inCollection) {
+          group += '<br />(part of <a href="' + cov.ld.inCollection.id + '">collection</a>)'
+        }
+        layerControl.addOverlay(layer, key, group)
       }
-      
-      if (!group) {
-        group = url
-      }
-      // TODO use jsonld to properly query graph (together with using cov.id as reference point)
-      if (cov.ld.inCollection) {
-        group += '<br />(part of <a href="' + cov.ld.inCollection.id + '">collection</a>)'
-      }
-      layerControl.addOverlay(layer, key, group)
     }
   }).catch(e => {
     map.fire('dataload')
     console.log(e)
     window.alert(e)
   })
+}
+
+function createLayer(cov, opts) {
+  let layer = layerFactory(cov, opts).on('add', e => {
+    let covLayer = e.target
+    console.log('layer added:', covLayer)
+            
+    // This registers the layer with the sync manager.
+    // By doing that, the palette and extent get unified (if existing)
+    // and an event gets fired if a new parameter was added.
+    // See the code above where ParameterSync gets instantiated.
+    paramSync.addLayer(covLayer)
+    
+    layersOnMap.add(covLayer)
+    map.fitBounds(L.latLngBounds([...layersOnMap.values()].map(l => l.getBounds())),
+        { maxZoom: 5 })
+  }).on('remove', e => {
+    let covLayer = e.target
+    layersOnMap.delete(covLayer)
+  }).on('dataLoading', () => map.fire('dataloading'))
+    .on('dataLoad', () => map.fire('dataload'))
+  
+
+  // TODO is this a good way to do that?
+  if (cov.domainType.endsWith('Profile')) {
+    // we do that outside of the above 'add' handler since we want to register only once,
+    // not every time the layer is added to the map
+    let plot
+    layer.on('click', () => {
+      plot = new ProfilePlot(cov, opts).addTo(map)
+    }).on('remove', () => {
+      if (plot) {
+        map.removeLayer(plot)
+      }
+    })
+  }
+  
+  return layer
 }
 
 if (window.location.hash) {
@@ -169,6 +180,7 @@ const JSONInput_TEMPLATE = `
       <button name="example-grid-categories">Grid (categories)</button>
       <button name="example-profile">Profile</button>
       <button name="example-trajectory">Trajectory</button>
+      <button name="example-profile-collection">Collection</button>
       <br><br>
     </form>
     <button name="expand" data-collapse="Hide" data-expand="Direct Input">Direct Input</button>
@@ -181,7 +193,8 @@ let examples = {
   'grid': 'coverages/grid.covjson',
   'grid-categories': 'coverages/grid-categorical.covjson',
   'trajectory': 'coverages/trajectory.covjson',
-  'profile': 'coverages/profile.covjson'
+  'profile': 'coverages/profile.covjson',
+  'profile-collection': 'coverages/profile-collection.covjson'
 }
 
 let jsonInput = new JSONInput({

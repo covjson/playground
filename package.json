@@ -19,7 +19,7 @@
     "dependencies": {
       "codemirror": "npm:codemirror@^5.7.0",
       "coverage-rest-client": "github:Reading-eScience-Centre/coverage-rest-client@master",
-      "covjson-reader": "npm:covjson-reader@^0.3.3",
+      "covjson-reader": "npm:covjson-reader@^0.3.4",
       "css": "github:systemjs/plugin-css@^0.1.13",
       "leaflet": "github:Leaflet/Leaflet@^0.7.5",
       "leaflet-coverage": "github:Reading-eScience-Centre/leaflet-coverage@master",

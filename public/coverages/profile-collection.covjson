@@ -1,0 +1,121 @@
+{
+  "type" : "CoverageCollection",
+  "parameters" : {
+    "PSAL": {
+      "type" : "Parameter",
+      "description" : {
+        "en": "The measured salinity, in practical salinity units (psu) of the sea water"
+      },
+      "unit" : {
+        "symbol" : "psu"
+      },
+      "observedProperty" : {
+        "label" : {
+          "en": "Sea Water Salinity"
+        }
+      }
+    }
+  },
+  "coverages": [
+    {
+      "type" : "Coverage",
+      "profile": "VerticalProfileCoverage",
+      "domain" : {
+        "type": "Domain",
+        "profile" : "VerticalProfile",
+        "axes": {
+          "x": { "values": [-10.1] },
+          "y": { "values": [-40.2] },
+          "z": { "values": [ 5, 8, 14 ] },
+          "t": { "values": ["2013-01-13T11:12:20Z"] }
+        },
+        "referencing": [{
+          "identifiers": ["x","y"],
+          "srs": {
+            "type": "GeodeticCRS",
+            "id": "http://www.opengis.net/def/crs/OGC/1.3/CRS84"
+          }
+        }, {
+          "identifiers": ["z"],
+          "srs": {
+            "type": "VerticalCRS",
+            "cs": {
+              "axes": [{
+                "name": {
+                  "en": "Pressure"
+                },
+                "direction": "down",
+                "unit": {
+                  "symbol": "Pa"
+                }
+              }]
+            }
+          }
+        }, {
+          "identifiers": ["t"],
+          "trs": {
+            "type": "TemporalRS",
+            "calendar": "Gregorian"
+          }
+        }]
+      },
+      "ranges" : {
+        "type" : "RangeSet",
+        "PSAL" : {
+          "type" : "Range",
+          "dataType": "float",
+          "values" : [ 43.7, 43.8, 43.9 ]
+        }
+      }
+    }, {
+      "type" : "Coverage",
+      "profile": "VerticalProfileCoverage",
+      "domain" : {
+        "type": "Domain",
+        "profile" : "VerticalProfile",
+        "axes": {
+          "x": { "values": [-11.1] },
+          "y": { "values": [-45.2] },
+          "z": { "values": [ 4, 7, 9 ] },
+          "t": { "values": ["2013-01-13T12:12:20Z"] }
+        },
+        "referencing": [{
+          "identifiers": ["x","y"],
+          "srs": {
+            "type": "GeodeticCRS",
+            "id": "http://www.opengis.net/def/crs/OGC/1.3/CRS84"
+          }
+        }, {
+          "identifiers": ["z"],
+          "srs": {
+            "type": "VerticalCRS",
+            "cs": {
+              "axes": [{
+                "name": {
+                  "en": "Pressure"
+                },
+                "direction": "down",
+                "unit": {
+                  "symbol": "Pa"
+                }
+              }]
+            }
+          }
+        }, {
+          "identifiers": ["t"],
+          "trs": {
+            "type": "TemporalRS",
+            "calendar": "Gregorian"
+          }
+        }]
+      },
+      "ranges" : {
+        "type" : "RangeSet",
+        "PSAL" : {
+          "type" : "Range",
+          "dataType": "float",
+          "values" : [ 42.7, 41.8, 40.9 ]
+        }
+      }
+    }]
+}
