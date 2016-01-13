@@ -11,6 +11,7 @@ import * as RestAPI from 'coverage-rest-client'
 import LayerFactory from 'leaflet-coverage'
 
 import Legend from 'leaflet-coverage/controls/Legend.js'
+import TimeAxis from 'leaflet-coverage/controls/TimeAxis.js'
 import ProfilePlot from 'leaflet-coverage/popups/VerticalProfilePlot.js'
 import ParameterSync from 'leaflet-coverage/renderers/ParameterSync.js'
 import * as palettes from 'leaflet-coverage/renderers/palettes.js'
@@ -19,7 +20,6 @@ import {inject} from 'leaflet-coverage/controls/utils.js'
 
 import UrlInput from './control.UrlInput.js'
 import JSONInput from './control.JSONInput.js'
-import TimeAxisControl from './TimeAxisControl.js'
 
 import './style.css!'
 
@@ -130,7 +130,7 @@ function createLayer(cov, opts) {
     paramSync.addLayer(covLayer)
     
     if (covLayer.time) {
-      new TimeAxisControl(covLayer).addTo(map)
+      new TimeAxis(covLayer).addTo(map)
     }
     
     layersOnMap.add(covLayer)
