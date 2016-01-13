@@ -19,6 +19,7 @@ import {inject} from 'leaflet-coverage/controls/utils.js'
 
 import UrlInput from './control.UrlInput.js'
 import JSONInput from './control.JSONInput.js'
+import TimeAxisControl from './TimeAxisControl.js'
 
 import './style.css!'
 
@@ -127,6 +128,10 @@ function createLayer(cov, opts) {
     // and an event gets fired if a new parameter was added.
     // See the code above where ParameterSync gets instantiated.
     paramSync.addLayer(covLayer)
+    
+    if (covLayer.time) {
+      new TimeAxisControl(covLayer).addTo(map)
+    }
     
     layersOnMap.add(covLayer)
     map.fitBounds(L.latLngBounds([...layersOnMap.values()].map(l => l.getBounds())),
