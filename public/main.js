@@ -47,7 +47,8 @@ let covs = ['coverages/trajectory.covjson',
             'coverages/grid.covjson',
             'coverages/grid-categorical.covjson',
             'coverages/profile.covjson',
-            'coverages/profile-collection.covjson'
+            'coverages/profile-collection.covjson',
+            'coverages/multipolygon.covjson'
            ]
 
 // We use ParameterSync here so that multiple coverage layers that display the same
@@ -185,6 +186,7 @@ const JSONInput_TEMPLATE = `
       <button name="example-grid-categories">Grid (categories)</button>
       <button name="example-profile">Profile</button>
       <button name="example-trajectory">Trajectory</button>
+      <button name="example-multipolygon">MultiPolygon</button>
       <button name="example-profile-collection">Collection</button>
       <br><br>
     </form>
@@ -199,7 +201,8 @@ let examples = {
   'grid-categories': 'coverages/grid-categorical.covjson',
   'trajectory': 'coverages/trajectory.covjson',
   'profile': 'coverages/profile.covjson',
-  'profile-collection': 'coverages/profile-collection.covjson'
+  'profile-collection': 'coverages/profile-collection.covjson',
+  'multipolygon': 'coverages/multipolygon.covjson'
 }
 
 let jsonInput = new JSONInput({
