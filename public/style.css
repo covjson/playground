@@ -10,7 +10,7 @@ html, body { height: 98%; }
 	border-radius: 5px;
 }
 
-.leaflet-control-layers-group-name {
+.leaflet-control-layers-group-label {
 	max-width: 250px;
     text-overflow: ellipsis;
     white-space: nowrap;
