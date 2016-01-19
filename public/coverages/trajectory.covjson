@@ -47,7 +47,6 @@
     }
   },
   "ranges" : {
-    "type" : "RangeSet",
     "ICEC" : {
       "type" : "Range",
       "values" : [ 0.1, 0.2, 0.1 ],

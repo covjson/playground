@@ -60,7 +60,6 @@
         }]
       },
       "ranges" : {
-        "type" : "RangeSet",
         "PSAL" : {
           "type" : "Range",
           "dataType": "float",
@@ -110,7 +109,6 @@
         }]
       },
       "ranges" : {
-        "type" : "RangeSet",
         "PSAL" : {
           "type" : "Range",
           "dataType": "float",
