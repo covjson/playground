@@ -6,7 +6,7 @@
     "profile" : "Trajectory",
     "axes": {
       "composite": {
-        "dataType": "Simple",
+        "dataType": "Tuple",
         "dimensions": ["t","x","y","z"],
         "values": [
           ["2010-01-01T00:12:20Z",-10,40,5],
