@@ -12,13 +12,13 @@
     },
     "rangeAxisOrder": ["t","z","y","x"],
     "referencing": [{
-      "identifiers": ["y","x","z"],
+      "dimensions": ["y","x","z"],
       "srs": {
         "type": "GeodeticCRS",
         "id": "http://www.opengis.net/def/crs/EPSG/0/4979"
       }
     }, {
-      "identifiers": ["t"],
+      "dimensions": ["t"],
       "trs": {
         "type": "TemporalRS",
         "calendar": "Gregorian"

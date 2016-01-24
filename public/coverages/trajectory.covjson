@@ -6,8 +6,8 @@
     "profile" : "Trajectory",
     "axes": {
       "composite": {
-        "compositeType": "Simple",
-        "components": ["t","x","y","z"],
+        "dataType": "Simple",
+        "dimensions": ["t","x","y","z"],
         "values": [
           ["2010-01-01T00:12:20Z",-10,40,5],
           ["2010-01-01T00:14:20Z",-5,50,4],
@@ -16,13 +16,13 @@
       }
     },
     "referencing": [{
-      "identifiers": ["t"],
+      "dimensions": ["t"],
       "trs": {
         "type": "TemporalRS",
         "calendar": "Gregorian"
       }
     }, {
-      "identifiers": ["y","x","z"],
+      "dimensions": ["y","x","z"],
       "srs": {
         "type": "GeodeticCRS",
         "id": "http://www.opengis.net/def/crs/EPSG/0/4979"
