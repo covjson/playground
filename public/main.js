@@ -144,8 +144,8 @@ function createLayer(cov, opts) {
     .on('dataLoad', () => map.fire('dataload'))
   
 
-  // TODO is this a good way to do that?
-  if (cov.domainType.endsWith('Profile')) {
+  // TODO use full URI
+  if (cov.domainProfiles.some(p => p.endsWith('VerticalProfile'))) {
     // we do that outside of the above 'add' handler since we want to register only once,
     // not every time the layer is added to the map
     let plot
