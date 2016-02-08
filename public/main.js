@@ -95,7 +95,7 @@ function loadCov (url, group=undefined) {
       for (let key of cov.parameters.keys()) {
         let opts = {keys: [key]}
         
-        let layers = cov.coverages.map(coverage => createLayer(coverage, opts))        
+        let layers = cov.coverages.map(coverage => createLayer(coverage, opts, true))
         let layer = L.layerGroup(layers)
         layerControl.addOverlay(layer, key, group)
       }      
@@ -119,7 +119,7 @@ function loadCov (url, group=undefined) {
   })
 }
 
-function createLayer(cov, opts) {
+function createLayer(cov, opts, nozoom) {
   let layer = layerFactory(cov, opts).on('add', e => {
     let covLayer = e.target
     console.log('layer added:', covLayer)
@@ -135,8 +135,10 @@ function createLayer(cov, opts) {
     }
     
     layersOnMap.add(covLayer)
-    map.fitBounds(L.latLngBounds([...layersOnMap.values()].map(l => l.getBounds())),
-        { maxZoom: 5 })
+    if (!nozoom) {
+      map.fitBounds(L.latLngBounds([...layersOnMap.values()].map(l => l.getBounds())),
+          { maxZoom: 5 })
+    }
   }).on('remove', e => {
     let covLayer = e.target
     layersOnMap.delete(covLayer)
