@@ -101,14 +101,15 @@ function loadCov (url, group=undefined) {
       }      
     } else {
       // single coverage
+      
+      // TODO use jsonld to properly query graph (together with using cov.id as reference point)
+      if (cov.ld.inCollection) {
+        group += '<br />(part of <a href="' + cov.ld.inCollection.id + '">collection</a>)'
+      }
       for (let key of cov.parameters.keys()) {
         let opts = {keys: [key]}
         let layer = createLayer(cov, opts)
         
-        // TODO use jsonld to properly query graph (together with using cov.id as reference point)
-        if (cov.ld.inCollection) {
-          group += '<br />(part of <a href="' + cov.ld.inCollection.id + '">collection</a>)'
-        }
         layerControl.addOverlay(layer, key, group)
       }
     }
