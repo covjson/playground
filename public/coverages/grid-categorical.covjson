@@ -64,9 +64,8 @@
   "ranges" : {
     "LC" : {
       "type" : "Range",
-      "values" : [ 1, 1, null, 2, 1, 2 ],
-      "validMin" : 1,
-      "validMax" : 2
+      "dataType": "integer",
+      "values" : [ 1, 1, null, 2, 1, 2 ]
     }
   }
 }

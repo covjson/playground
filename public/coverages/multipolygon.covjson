@@ -50,8 +50,8 @@
   "ranges" : {
     "TEMP": {
       "type" : "Range",
-      "values" : [ 22.8, 15.1 ],
-      "dataType": "float"
+      "dataType": "float",
+      "values" : [ 22.8, 15.1 ]
     }
   }
 }
