@@ -13,9 +13,7 @@ import LayerFactory from 'leaflet-coverage'
 import Legend from 'leaflet-coverage/controls/Legend.js'
 import TimeAxis from 'leaflet-coverage/controls/TimeAxis.js'
 import ProfilePlot from 'leaflet-coverage/popups/VerticalProfilePlot.js'
-import ParameterSync from 'leaflet-coverage/renderers/ParameterSync.js'
-import * as palettes from 'leaflet-coverage/renderers/palettes.js'
-import * as transform from 'leaflet-coverage/util/transform.js'
+import ParameterSync from 'leaflet-coverage/layers/ParameterSync.js'
 import {inject} from 'leaflet-coverage/controls/utils.js'
 
 import UrlInput from './control.UrlInput.js'
@@ -153,7 +151,7 @@ function createLayer(cov, opts, nozoom) {
     // not every time the layer is added to the map
     let plot
     layer.on('click', () => {
-      plot = new ProfilePlot(cov, opts).addTo(map)
+      plot = new ProfilePlot(cov).addTo(map)
     }).on('remove', () => {
       if (plot) {
         map.removeLayer(plot)
