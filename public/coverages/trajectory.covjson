@@ -7,7 +7,7 @@
     "axes": {
       "composite": {
         "dataType": "Tuple",
-        "dimensions": ["t","x","y","z"],
+        "components": ["t","x","y","z"],
         "values": [
           ["2010-01-01T00:12:20Z",-10,40,5],
           ["2010-01-01T00:14:20Z",-5,50,4],
@@ -16,14 +16,14 @@
       }
     },
     "referencing": [{
-      "dimensions": ["t"],
-      "trs": {
+      "components": ["t"],
+      "system": {
         "type": "TemporalRS",
         "calendar": "Gregorian"
       }
     }, {
-      "dimensions": ["y","x","z"],
-      "srs": {
+      "components": ["y","x","z"],
+      "system": {
         "type": "GeodeticCRS",
         "id": "http://www.opengis.net/def/crs/EPSG/0/4979"
       }
@@ -33,15 +33,15 @@
     "ICEC": {
       "type" : "Parameter",
       "description" : {
-      	"en": "ice"
+      	"en": "Sea Ice concentration (ice=1;no ice=0)"
       },
       "unit" : {
         "symbol" : "fraction"
       },
       "observedProperty" : {
-        "id" : "http://foo/sea_ice_concentration",
+        "id" : "http://vocab.nerc.ac.uk/standard_name/sea_ice_area_fraction/",
         "label" : {
-          "en": "ice"
+          "en": "Sea Ice Concentration"
         }
       }
     }

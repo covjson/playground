@@ -12,14 +12,14 @@
     },
     "rangeAxisOrder": ["t","z","y","x"],
     "referencing": [{
-      "dimensions": ["y","x","z"],
-      "srs": {
+      "components": ["y","x","z"],
+      "system": {
         "type": "GeodeticCRS",
         "id": "http://www.opengis.net/def/crs/EPSG/0/4979"
       }
     }, {
-      "dimensions": ["t"],
-      "trs": {
+      "components": ["t"],
+      "system": {
         "type": "TemporalRS",
         "calendar": "Gregorian"
       }
@@ -35,7 +35,7 @@
         "symbol" : "fraction"
       },
       "observedProperty" : {
-        "id" : "http://foo/sea_ice_concentration",
+        "id" : "http://vocab.nerc.ac.uk/standard_name/sea_ice_area_fraction/",
         "label" : {
           "en": "Sea Ice Concentration"
         }

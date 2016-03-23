@@ -11,14 +11,14 @@
     },
     "rangeAxisOrder": ["t","y","x"],
     "referencing": [{
-      "dimensions": ["x","y"],
-      "srs": {
+      "components": ["x","y"],
+      "system": {
         "type": "GeodeticCRS",
         "id": "http://www.opengis.net/def/crs/OGC/1.3/CRS84"
       }
     }, {
-      "dimensions": ["t"],
-      "trs": {
+      "components": ["t"],
+      "system": {
         "type": "TemporalRS",
         "calendar": "Gregorian"
       }
@@ -31,12 +31,12 @@
         "en": "Land Cover according to xyz classification"
       },
       "observedProperty" : {
-        "id" : "http://.../landcover1",
+        "id" : "http://example.com/landcover",
         "label" : {
           "en": "XYZ Land Cover"
         },
         "categories" : [{
-          "id": "http://.../landcover1/categories/grass",
+          "id": "http://example.com/landcover/categories/grass",
           "label": {
             "en": "Grass"
           },
@@ -45,7 +45,7 @@
           },
           "preferredColor": "#01A611"
         }, {
-          "id": "http://.../landcover1/categories/rocks",
+          "id": "http://example.com/landcover/categories/rocks",
           "label": {
             "en": "Rock"
           },
@@ -56,8 +56,8 @@
         }]
       },
       "categoryEncoding": {
-        "http://.../landcover1/categories/grass": 1,
-        "http://.../landcover1/categories/rocks": 2
+        "http://example.com/landcover/categories/grass": 1,
+        "http://example.com/landcover/categories/rocks": 2
       }
     }
   },
