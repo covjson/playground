@@ -92,7 +92,9 @@ function loadCov (url, options = {}) {
       for (let key of cov.parameters.keys()) {
         let opts = {keys: [key]}
         
-        let layers = cov.coverages.map(coverage => createLayer(coverage, opts, true))
+        let layers = cov.coverages
+          .filter(coverage => coverage.parameters.has(key))
+          .map(coverage => createLayer(coverage, opts, true))
         let layer = L.layerGroup(layers)
         layerControl.addOverlay(layer, key, group)
         if (!firstLayer) {
