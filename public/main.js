@@ -71,10 +71,8 @@ let paramSync = new ParameterSync({
 
 let layersOnMap = new Set()
   
-function loadCov (url, group=undefined) {
-  if (!group) {
-    group = url
-  }
+function loadCov (url, options = {}) {
+  let group = options.group || url
   map.fire('dataloading')
   CovJSON.read(url)
     .then(cov => RestAPI.wrap(cov, {loader: CovJSON.read}))
@@ -84,6 +82,7 @@ function loadCov (url, group=undefined) {
     console.log('Coverage loaded: ', cov)
     
     // add each parameter as a layer
+    let firstLayer
     
     if (cov.coverages) {
       // collection
@@ -96,6 +95,9 @@ function loadCov (url, group=undefined) {
         let layers = cov.coverages.map(coverage => createLayer(coverage, opts, true))
         let layer = L.layerGroup(layers)
         layerControl.addOverlay(layer, key, group)
+        if (!firstLayer) {
+          firstLayer = layer
+        }
       }      
     } else {
       // single coverage
@@ -109,7 +111,13 @@ function loadCov (url, group=undefined) {
         let layer = createLayer(cov, opts)
         
         layerControl.addOverlay(layer, key, group)
+        if (!firstLayer) {
+          firstLayer = layer
+        }
       }
+    }
+    if (options.display && firstLayer) {
+      map.addLayer(firstLayer)
     }
   }).catch(e => {
     map.fire('dataload')
@@ -163,7 +171,7 @@ function createLayer(cov, opts, nozoom) {
 }
 
 if (window.location.hash) {
-  loadCov(window.location.hash.substr(1))
+  loadCov(window.location.hash.substr(1), {display: true})
 } else {
   for (let url of covs) {
     loadCov(url)
@@ -173,7 +181,7 @@ if (window.location.hash) {
 new UrlInput({
   position: 'bottomleft'
 }).on('submit', e => {
-  loadCov(e.url)
+  loadCov(e.url, {display: true})
 }).addTo(map)
 
 
@@ -210,7 +218,7 @@ let jsonInput = new JSONInput({
   id: 'template-json-input',
   position: 'bottomleft'
 }).on('submit', e => {
-  loadCov(e.obj, 'Direct Input')
+  loadCov(e.obj, {group: 'Direct Input', display: true})
 }).addTo(map)
 
 
