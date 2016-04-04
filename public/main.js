@@ -231,9 +231,13 @@ let editor = new Editor({
   map.invalidateSize()
 })
 
-if (window.location.hash) {
+function loadFromHash () {
   let url = window.location.hash.substr(1)
   editor.load(url)
+}
+
+if (window.location.hash) {
+  loadFromHash()
 } else {
   editor.json = 
 `{
@@ -241,6 +245,8 @@ if (window.location.hash) {
   "coverages": []
 }`  
 }
+
+window.addEventListener("hashchange", loadFromHash, false)
 
 new FileMenu({
   container: document.getElementsByClassName('file-bar')[0],
