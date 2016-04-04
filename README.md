@@ -1,6 +1,6 @@
-# leaflet-coverage demo page
+# CoverageJSON Playground
 
-https://reading-escience-centre.github.io/leaflet-coverage-demo
+https://reading-escience-centre.github.io/covjson-playground
 
 ## Development setup
 
