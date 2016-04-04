@@ -21,17 +21,24 @@
       "coverage-rest-client": "github:Reading-eScience-Centre/coverage-rest-client@master",
       "covjson-reader": "npm:covjson-reader@^0.8.4",
       "css": "github:systemjs/plugin-css@^0.1.13",
+      "fetch": "npm:whatwg-fetch@^0.11.0",
+      "font-awesome": "npm:font-awesome@^4.5.0",
+      "jsonlint": "github:josdejong/jsonlint@master",
       "leaflet": "github:Leaflet/Leaflet@^0.7.5",
       "leaflet-coverage": "github:Reading-eScience-Centre/leaflet-coverage@master",
       "leaflet-groupedlayercontrol": "github:ismyrnow/Leaflet.groupedlayercontrol@^0.4.0",
-      "leaflet-loading": "github:ebrelsford/Leaflet.loading@^0.1.16",
-      "minified": "github:timjansen/minified.js@^2015.1.1"
+      "leaflet-loading": "github:ebrelsford/Leaflet.loading@^0.1.16"
     },
     "devDependencies": {
       "babel": "npm:babel-core@^5.8.24",
       "babel-runtime": "npm:babel-runtime@^5.8.24",
       "clean-css": "npm:clean-css@3.4.8",
       "core-js": "npm:core-js@^1.1.4"
+    },
+    "overrides": {
+      "github:josdejong/jsonlint@master": {
+        "registry": "npm"
+      }
     }
   }
 }

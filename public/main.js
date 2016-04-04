@@ -4,7 +4,6 @@ import 'leaflet-loading'
 import 'leaflet-loading/src/Control.Loading.css!'
 import 'leaflet-groupedlayercontrol'
 import 'leaflet-groupedlayercontrol/dist/leaflet.groupedlayercontrol.min.css!'
-import {$} from 'minified'
 
 import * as CovJSON from 'covjson-reader'
 import * as RestAPI from 'coverage-rest-client'
@@ -14,20 +13,20 @@ import Legend from 'leaflet-coverage/controls/Legend.js'
 import TimeAxis from 'leaflet-coverage/controls/TimeAxis.js'
 import ProfilePlot from 'leaflet-coverage/popups/VerticalProfilePlot.js'
 import ParameterSync from 'leaflet-coverage/layers/ParameterSync.js'
-import {inject} from 'leaflet-coverage/controls/utils.js'
 
-import UrlInput from './control.UrlInput.js'
-import JSONInput from './control.JSONInput.js'
+import FileMenu from './FileMenu.js'
+import Editor from './Editor.js'
 
 import './style.css!'
 
-let map = L.map('map', {
+let mapEl = document.getElementsByClassName('map')[0]
+let map = L.map(mapEl, {
   loadingControl: true,
   // initial center and zoom has to be set before layers can be added
   center: [10, 0],
   zoom: 2
 })
-window.map = map
+
 let baseLayers = {
   'OSM':
     L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -36,18 +35,9 @@ let baseLayers = {
 }
 baseLayers['OSM'].addTo(map)
 
-let layerControl = L.control.groupedLayers(baseLayers, [], {collapsed: false}).addTo(map)
+let layerControl = L.control.groupedLayers([], [], {collapsed: false}).addTo(map)
 
 let layerFactory = LayerFactory()
-
-// some initial test data to play with
-let covs = ['coverages/trajectory.covjson',
-            'coverages/grid.covjson',
-            'coverages/grid-categorical.covjson',
-            'coverages/profile.covjson',
-            'coverages/profile-collection.covjson',
-            'coverages/multipolygon.covjson'
-           ]
 
 // We use ParameterSync here so that multiple coverage layers that display the same
 // parameter get synchronized in terms of their palette and extent.
@@ -70,9 +60,19 @@ let paramSync = new ParameterSync({
   })
 
 let layersOnMap = new Set()
-  
+
+function removeLayers () {
+  for (let layer of layersOnMap) {
+    layerControl.removeLayer(layer)
+    map.removeLayer(layer)
+  }
+}
+
 function loadCov (url, options = {}) {
-  let group = options.group || url
+  removeLayers()
+  
+  let group = options.group || 'Parameters'
+  
   map.fire('dataloading')
   CovJSON.read(url)
     .then(cov => RestAPI.wrap(cov, {loader: CovJSON.read}))
@@ -89,16 +89,31 @@ function loadCov (url, options = {}) {
       if (!cov.parameters) {
         throw new Error('Only coverage collections with a "parameters" property are supported')
       }
+            
       for (let key of cov.parameters.keys()) {
         let opts = {keys: [key]}
         
         let layers = cov.coverages
           .filter(coverage => coverage.parameters.has(key))
-          .map(coverage => createLayer(coverage, opts, true))
+          .map(coverage => createLayer(coverage, opts))
         let layer = L.layerGroup(layers)
+        layersOnMap.add(layer)
+        
         layerControl.addOverlay(layer, key, group)
         if (!firstLayer) {
           firstLayer = layer
+
+          // the following piece of code should be easier
+          // TODO extend layer group class in leaflet-coverage (like PointCollection) to provide single 'add' event
+          let addCount = 0
+          for (let l of layers) {
+            l.on('add', () => {
+              ++addCount
+              if (addCount === layers.length) {
+                zoomToLayers(layers)
+              }
+            })  
+          }
         }
       }      
     } else {
@@ -106,15 +121,22 @@ function loadCov (url, options = {}) {
       
       // TODO use jsonld to properly query graph (together with using cov.id as reference point)
       if (cov.ld.inCollection) {
-        group += '<br />(part of <a href="' + cov.ld.inCollection.id + '">collection</a>)'
+        group += '<br />(part of <a href="' + cov.ld.inCollection.id + '">linked collection</a>)'
       }
       for (let key of cov.parameters.keys()) {
         let opts = {keys: [key]}
         let layer = createLayer(cov, opts)
+        layersOnMap.add(layer)
         
         layerControl.addOverlay(layer, key, group)
         if (!firstLayer) {
           firstLayer = layer
+          layer.on('add', () => {
+            zoomToLayers([layer])
+            if (isVerticalProfile(cov)) {
+              layer.fire('click')
+            }
+          })
         }
       }
     }
@@ -128,7 +150,17 @@ function loadCov (url, options = {}) {
   })
 }
 
-function createLayer(cov, opts, nozoom) {
+function zoomToLayers (layers) {
+  map.fitBounds(L.latLngBounds(layers.map(l => l.getBounds())),
+      { maxZoom: 5 })
+}
+
+function isVerticalProfile (cov) {
+  // TODO use full URI
+  return cov.domainProfiles.some(p => p.endsWith('VerticalProfile'))
+}
+
+function createLayer(cov, opts) {
   let layer = layerFactory(cov, opts).on('add', e => {
     let covLayer = e.target
     console.log('layer added:', covLayer)
@@ -142,21 +174,10 @@ function createLayer(cov, opts, nozoom) {
     if (covLayer.time) {
       new TimeAxis(covLayer).addTo(map)
     }
-    
-    layersOnMap.add(covLayer)
-    if (!nozoom) {
-      map.fitBounds(L.latLngBounds([...layersOnMap.values()].map(l => l.getBounds())),
-          { maxZoom: 5 })
-    }
-  }).on('remove', e => {
-    let covLayer = e.target
-    layersOnMap.delete(covLayer)
   }).on('dataLoading', () => map.fire('dataloading'))
     .on('dataLoad', () => map.fire('dataload'))
   
-
-  // TODO use full URI
-  if (cov.domainProfiles.some(p => p.endsWith('VerticalProfile'))) {
+  if (isVerticalProfile(cov)) {
     // we do that outside of the above 'add' handler since we want to register only once,
     // not every time the layer is added to the map
     let plot
@@ -172,72 +193,44 @@ function createLayer(cov, opts, nozoom) {
   return layer
 }
 
-if (window.location.hash) {
-  loadCov(window.location.hash.substr(1), {display: true})
-} else {
-  for (let url of covs) {
-    loadCov(url)
-  }
-}
+let examples = [{
+  title: 'Grid',
+  url: 'coverages/grid.covjson'
+}, {
+  title: 'Grid (Categorical)',
+  url: 'coverages/grid-categorical.covjson'
+}, {
+  title: 'Trajectory',
+  url: 'coverages/trajectory.covjson'
+}, {
+  title: 'Profile',
+  url: 'coverages/profile.covjson'
+}, {
+  title: 'Profile Collection',
+  url: 'coverages/profile-collection.covjson'
+}, {
+  title: 'MultiPolygon',
+  url: 'coverages/multipolygon.covjson'
+}]
 
-new UrlInput({
-  position: 'bottomleft'
-}).on('submit', e => {
-  loadCov(e.url, {display: true})
-}).addTo(map)
-
-
-const JSONInput_TEMPLATE = `
-<template id="template-json-input">
-  <div class="info">
-    <form class="hidden">
-      <textarea type="text" name="text"></textarea><br>
-      <button style="margin-right: 30px">Load</button>
-      <button name="example-grid">Grid</button>
-      <button name="example-grid-categories">Grid (categories)</button>
-      <button name="example-profile">Profile</button>
-      <button name="example-trajectory">Trajectory</button>
-      <button name="example-multipolygon">MultiPolygon</button>
-      <button name="example-profile-collection">Collection</button>
-      <br><br>
-    </form>
-    <button name="expand" data-collapse="Hide" data-expand="Direct Input">Direct Input</button>
-  </div>
-</template>
-`
-inject(JSONInput_TEMPLATE)
-
-let examples = {
-  'grid': 'coverages/grid.covjson',
-  'grid-categories': 'coverages/grid-categorical.covjson',
-  'trajectory': 'coverages/trajectory.covjson',
-  'profile': 'coverages/profile.covjson',
-  'profile-collection': 'coverages/profile-collection.covjson',
-  'multipolygon': 'coverages/multipolygon.covjson'
-}
-
-let jsonInput = new JSONInput({
-  id: 'template-json-input',
-  position: 'bottomleft'
-}).on('submit', e => {
-  loadCov(e.obj, {group: 'Direct Input', display: true})
-}).addTo(map)
-
-
-$.request('get', examples['grid']).then(covjson => {
-  jsonInput.json = covjson
+let editor = new Editor({
+  container: document.getElementsByClassName('right')[0]
+}).on('change', e => {
+  loadCov(e.obj, {display: true})
+}).on('resize', () => {
+  map.invalidateSize()
 })
 
-// add our custom button click handlers
-let el = jsonInput.getContainer()
-
-for (let name in examples){
-  // we don't use CovJSON.load() here as we want to retain the original formatting 
-  $.request('get', examples[name]).then(covjson => {
-    let btn = $('button', el).filter(b => b.name === 'example-' + name)
-    btn.on('click', () => {
-      jsonInput.json = covjson
-    })
-  })
+if (window.location.hash) {
+  let url = window.location.hash.substr(1)
+  editor.load(url)
 }
 
+new FileMenu({
+  container: document.getElementsByClassName('file-bar')[0],
+  examples
+}).on('requestload', ({url}) => editor.load(url))
+
+window.api = {
+    map
+}

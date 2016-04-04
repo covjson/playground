@@ -1,18 +1,217 @@
-html, body { height: 98%; }
-#map { height: 100%; }
+html, body { 
+	margin: 0;
+	padding: 0;
+	font-family: 'Open Sans', 'Helvetica Neue', sans-serif;
+}
 
-.info {
-	padding: 6px 8px;
-	font: 14px/16px Arial, Helvetica, sans-serif;
-	background: white;
-	background: rgba(255,255,255,0.8);
-	box-shadow: 0 0 15px rgba(0,0,0,0.2);
-	border-radius: 5px;
+:focus {
+    outline: none;
+}
+
+a {
+  color:#2980b9;
+  text-decoration:none;
+}
+
+a:hover {
+    color:#199CF4;
+}
+
+.map {
+	position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 40%;
+}
+
+body.fullscreen .map {
+    right:0;
+}
+
+body.fullscreen .right {
+    height:40px;
+    bottom:auto;
+    border-bottom: 1px solid #d9d9d9;
+    overflow-y: hidden;
+}
+
+body.fullscreen .right .top .buttons {
+    display:none;
+}
+
+body.fullscreen .leaflet-control-layers { margin-top:50px; }
+
+.right {
+  overflow-x:hidden;
+  position:absolute;
+  bottom:0;
+  top:0;
+  right:0;
+  width:40%;
+  min-width:400px;
+  box-sizing:border-box;
+  background:#fff;
+  transition:all 200ms;
+  box-shadow: rgba(0,0,0,0.1) -2px 0px 0px;
+  font-size: 15px;
+  line-height: 20px; 
+}
+
+@media screen and (max-width:1300px) {
+  .map {
+    right:50%;
+  }
+  .right {
+    width:50%;
+  }
+}
+
+.right .pane {
+  position:absolute;
+  top:40px;
+  bottom:0;
+  width:100%;
+  overflow:auto;
+}
+
+.right .CodeMirror {
+  position:absolute;
+  bottom:0;
+  right:0;
+  left:0;
+  top:0;
+  height:auto !important;
+  background:#fff;
+  font-family: monospace;
+  line-height:1.5em;
+}
+
+.CodeMirror-gutters {
+    background:#fff !important;
+}
+
+button {
+    background:#fff;
+    font: inherit;
+    cursor:pointer;
+    margin:0;
+    padding:0;
+    border:none;
+    box-sizing:border-box;
+}
+
+button.active {
+    background:#34495e;
+    color:#fff;
+}
+
+.top {
+    background:#eee;
+}
+
+.top .collapse-button {
+    position:absolute;
+    top:0;
+    left:0;
+    width:28px;
+    height:40px;
+    line-height:30px;
+    text-align:center;
+    border:none;
+}
+
+.top .buttons {
+    margin-left:28px;
+    height:40px;
+}
+
+.top .buttons button {
+    padding:10px 15px;
+    font-weight:normal;
+    height:40px;
+    border:0;
+    vertical-align:top;
+}
+
+.top .buttons button span.icon {
+    font-size:16px;
+    margin-right:5px;
+    vertical-align:middle;
+}
+
+.file-bar {
+	  z-index: 1000;
+    position:absolute;
+    top:0;
+    right:50px;
+    height:40px;
+    box-sizing:border-box;
+    line-height:40px;
+}
+
+.file-bar .name {
+    padding:0 10px;
+    display:inline-block;
+    vertical-align:top;
+    background:#fff;
+}
+
+.file-bar .name .filename {
+    margin-left:10px;
+}
+
+.file-bar div.item {
+    display:inline-block;
+}
+
+.file-bar div.item a.parent {
+    padding:0 10px;
+    height: 40px;
+    display: inline-block;
+    background:#fff;
+}
+
+.file-bar a:hover {
+    cursor:pointer;
+    background:#34495e;
+    color:#fff;
+}
+
+.file-bar div.item:hover a.parent, .file-bar div.item:focus a.parent {
+    background:#34495e;
+    color:#fff;
+}
+
+.file-bar div.item:hover div.children, .file-bar div.item:focus div.children {
+    display:block;
+}
+
+div.children {
+    display:none;
+    position:absolute;
+    margin-top:-1px;
+}
+
+div.children a {
+    display: block;
+    padding: 5px 10px;
+    line-height: 20px;
+    background:#fff;
 }
 
 .leaflet-control-layers-group-label {
 	max-width: 250px;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.info {
+  padding: 6px 8px;
+  font: 14px/16px Arial, Helvetica, sans-serif;
+  background: white;
+  background: rgba(255,255,255,0.8);
+  box-shadow: 0 0 15px rgba(0,0,0,0.2);
+  border-radius: 5px;
 }
