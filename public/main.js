@@ -66,8 +66,15 @@ let layersOnMap = new Set()
 function removeLayers () {
   for (let layer of layersOnMap) {
     layerControl.removeLayer(layer)
-    map.removeLayer(layer)
+    if (map.hasLayer(layer)) {
+      // FIXME leaflet's internal state breaks if layers or controls throw exceptions in onAdd()
+      // -> could be prevented by linting CovJSON before-hand
+      try {
+        map.removeLayer(layer)
+      } catch (e) {}
+    }
   }
+  layersOnMap = new Set()
 }
 
 function loadCov (url, options = {}) {

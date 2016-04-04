@@ -99,11 +99,12 @@ class Editor extends L.Class {
     
     cm.on('change', () => {
       let text = cm.getValue()
+      let obj
       try {
-        let obj = JSON.parse(text)
+        obj = JSON.parse(text)
+      } catch (e) {}
+      if (obj) {
         this.fire('change', {json: text, obj: obj})
-      } catch (e) {
-        console.log(e.message)
       }
     })    
   }
@@ -147,6 +148,8 @@ class Editor extends L.Class {
             from: CodeMirror.Pos(0, 0),
             to: CodeMirror.Pos(0, 0)
           }]
+        } else {
+          return []
         }
       }
     }
