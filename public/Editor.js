@@ -30,6 +30,9 @@ class Editor extends L.Class {
     super()
     this.container = options.container
     
+    this._globalErrors = []
+    this._wrapLinter()
+    
     this._createMenu()
     this._createJSONEditor()
     this._createHelpPane()
@@ -118,6 +121,36 @@ class Editor extends L.Class {
   
   set json (val) {
     this.cm.setValue(val)
+  }
+  
+  addError (msg) {
+    this._globalErrors.push(msg)
+  }
+  
+  clearErrors () {
+    this._globalErrors = []
+  }
+  
+  _wrapLinter () {
+    let jsonlinter = CodeMirror.helpers.lint.json
+    
+    let wrapped = text => {
+      let jsonlintResult = jsonlinter(text)
+      if (jsonlintResult.length > 0) {
+        return jsonlintResult
+      } else {
+        if (this._globalErrors.length > 0) {
+          let err = this._globalErrors[0]
+          this.clearErrors()
+          return [{
+            message: err,
+            from: CodeMirror.Pos(0, 0),
+            to: CodeMirror.Pos(0, 0)
+          }]
+        }
+      }
+    }
+    CodeMirror.helpers.lint.json = wrapped
   }
 }
 

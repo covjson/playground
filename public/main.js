@@ -14,6 +14,8 @@ import TimeAxis from 'leaflet-coverage/controls/TimeAxis.js'
 import ProfilePlot from 'leaflet-coverage/popups/VerticalProfilePlot.js'
 import ParameterSync from 'leaflet-coverage/layers/ParameterSync.js'
 
+import CodeMirror from 'codemirror'
+
 import FileMenu from './FileMenu.js'
 import Editor from './Editor.js'
 
@@ -143,10 +145,11 @@ function loadCov (url, options = {}) {
     if (options.display && firstLayer) {
       map.addLayer(firstLayer)
     }
+    editor.clearErrors()
   }).catch(e => {
     map.fire('dataload')
     console.log(e)
-    window.alert(e)
+    editor.addError(e.message)
   })
 }
 
@@ -224,6 +227,12 @@ let editor = new Editor({
 if (window.location.hash) {
   let url = window.location.hash.substr(1)
   editor.load(url)
+} else {
+  editor.json = 
+`{
+  "type": "CoverageCollection",
+  "coverages": []
+}`  
 }
 
 new FileMenu({
@@ -232,5 +241,7 @@ new FileMenu({
 }).on('requestload', ({url}) => editor.load(url))
 
 window.api = {
-    map
+    map,
+    cm: editor.cm,
+    CodeMirror
 }
