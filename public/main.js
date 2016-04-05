@@ -14,6 +14,9 @@ import TimeAxis from 'leaflet-coverage/controls/TimeAxis.js'
 import ProfilePlot from 'leaflet-coverage/popups/VerticalProfilePlot.js'
 import ParameterSync from 'leaflet-coverage/layers/ParameterSync.js'
 
+import {isDomain, isCoverage} from 'covutils/lib/validate.js'
+import {toCoverage} from 'covutils/lib/transform.js'
+
 import CodeMirror from 'codemirror'
 
 import FileMenu from './FileMenu.js'
@@ -87,6 +90,10 @@ function loadCov (url, options = {}) {
     .then(cov => RestAPI.wrap(cov, {loader: CovJSON.read}))
     .then(cov => {
       
+    if (isDomain(cov)) {
+      cov = toCoverage(cov)
+    }
+      
     map.fire('dataload')
     console.log('Coverage loaded: ', cov)
     
@@ -125,11 +132,11 @@ function loadCov (url, options = {}) {
           }
         }
       }      
-    } else {
+    } else if (isCoverage(cov)) {
       // single coverage
       
       // TODO use jsonld to properly query graph (together with using cov.id as reference point)
-      if (cov.ld.inCollection) {
+      if (cov.ld && cov.ld.inCollection) {
         group += '<br />(part of <a href="' + cov.ld.inCollection.id + '">linked collection</a>)'
       }
       for (let key of cov.parameters.keys()) {
@@ -148,6 +155,8 @@ function loadCov (url, options = {}) {
           })
         }
       }
+    } else {
+      throw new Error('unsupported type')
     }
     if (options.display && firstLayer) {
       map.addLayer(firstLayer)
