@@ -230,6 +230,9 @@ let examples = [{
 }, {
   title: 'MultiPolygon',
   url: 'coverages/multipolygon.covjson'
+}, {
+  title: 'Grid (Domain)',
+  url: 'coverages/grid-domain.covjson'
 }]
 
 let editor = new Editor({
