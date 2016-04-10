@@ -22,7 +22,7 @@
       }
     }, {
       "components": ["z"],
-      "systems": {
+      "system": {
         "type": "VerticalCRS",
         "cs": {
           "axes": [{
