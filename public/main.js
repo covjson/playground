@@ -170,8 +170,12 @@ function loadCov (url, options = {}) {
 }
 
 function zoomToLayers (layers) {
-  map.fitBounds(L.latLngBounds(layers.map(l => l.getBounds())),
-      { maxZoom: 5 })
+  let bounds = L.latLngBounds(layers.map(l => l.getBounds()))
+  let opts
+  if (bounds.getWest() === bounds.getEast() && bounds.getSouth() === bounds.getNorth()) {
+    opts = { maxZoom: 5 }
+  } 
+  map.fitBounds(bounds, opts)
 }
 
 function isVerticalProfile (cov) {
