@@ -5,7 +5,6 @@
     "x" : { "values": [-10,-5,0] },
     "y" : { "values": [40,50] }
   },
-  "rangeAxisOrder": ["y","x"],
   "referencing": [{
     "components": ["x","y"],
     "system": {
