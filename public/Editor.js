@@ -113,6 +113,7 @@ class Editor extends L.Class {
     fetch(url)
       .then(checkStatus)
       .then(response => response.text())
+      .then(prettifyJSON)
       .then(json => {
         this.json = json
       }).catch(e => {
@@ -157,7 +158,7 @@ class Editor extends L.Class {
   }
 }
 
-function checkStatus(response) {
+function checkStatus (response) {
   if (response.status >= 200 && response.status < 300) {
     return response
   } else {
@@ -165,6 +166,26 @@ function checkStatus(response) {
     error.response = response
     throw error
   }
+}
+
+/**
+ * Indents the JSON if it is all in a single line.
+ */
+function prettifyJSON (json) {
+  let maxLength = 100*1024 // 100 KiB
+  let lineCount = json.split(/\r\n|\r|\n/).length
+  if (lineCount > 2 || json.length > maxLength) {
+    // either already prettyprinted or too big
+    return json
+  }
+  let obj
+  try {
+    obj = JSON.parse(json)
+  } catch (e) {
+    // syntax error, don't prettyprint
+    return json
+  }
+  return JSON.stringify(obj, null, 2)
 }
 
 Editor.include(L.Mixin.Events)
