@@ -50,7 +50,7 @@
     "ICEC" : {
       "type" : "NdArray",
       "dataType": "float",
-      "axisName": ["composite"],
+      "axisNames": ["composite"],
       "shape": [3],
       "values" : [ 0.1, 0.2, 0.1 ]
     }
