@@ -1,9 +1,8 @@
 {
   "type" : "Coverage",
-  "profile": "MultiPolygonCoverage",
   "domain": {
     "type": "Domain",
-    "profile": "MultiPolygon",
+    "domainType": "MultiPolygon",
     "axes": {
       "composite": {
         "dataType": "Polygon",
@@ -51,8 +50,8 @@
     "TEMP": {
       "type" : "NdArray",
       "dataType": "float",
-      "axisNames": ["t", "composite"],
-      "shape": [1, 2],
+      "axisNames": ["composite"],
+      "shape": [2],
       "values" : [ 22.8, 15.1 ]
     }
   }

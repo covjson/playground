@@ -1,9 +1,8 @@
 {
   "type" : "Coverage",
-  "profile" : "GridCoverage",
   "domain" : {
     "type" : "Domain",
-    "profile" : "Grid",
+    "domainType" : "Grid",
     "axes": {
       "x" : { "values": [-10,-5,0] },
       "y" : { "values": [40,50] },

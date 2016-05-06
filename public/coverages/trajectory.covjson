@@ -1,9 +1,8 @@
 {
   "type" : "Coverage",
-  "profile" : "TrajectoryCoverage",
   "domain" : {
     "type" : "Domain",
-    "profile" : "Trajectory",
+    "domainType" : "Trajectory",
     "axes": {
       "composite": {
         "dataType": "Tuple",
