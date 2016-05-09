@@ -12,6 +12,7 @@ import LayerFactory from 'leaflet-coverage'
 import Legend from 'leaflet-coverage/controls/Legend.js'
 import TimeAxis from 'leaflet-coverage/controls/TimeAxis.js'
 import ProfilePlot from 'leaflet-coverage/popups/VerticalProfilePlot.js'
+import PointSeriesPlot from 'leaflet-coverage/popups/PointSeriesPlot.js'
 import ParameterSync from 'leaflet-coverage/layers/ParameterSync.js'
 
 import {isDomain, isCoverage} from 'covutils/lib/validate.js'
@@ -149,7 +150,7 @@ function loadCov (url, options = {}) {
           firstLayer = layer
           layer.on('add', () => {
             zoomToLayers([layer])
-            if (isVerticalProfile(cov)) {
+            if (isVerticalProfile(cov) || isPointSeries(cov)) {
               layer.fire('click')
             }
           })
@@ -183,6 +184,11 @@ function isVerticalProfile (cov) {
   return cov.domainProfiles.some(p => p.endsWith('VerticalProfile'))
 }
 
+function isPointSeries (cov) {
+  // TODO use full URI
+  return cov.domainProfiles.some(p => p.endsWith('PointSeries'))
+}
+
 function createLayer(cov, opts) {
   let layer = layerFactory(cov, opts).on('add', e => {
     let covLayer = e.target
@@ -211,6 +217,15 @@ function createLayer(cov, opts) {
         map.removeLayer(plot)
       }
     })
+  } else if (isPointSeries(cov)) {
+    let plot
+    layer.on('click', () => {
+      plot = new PointSeriesPlot(cov).addTo(map)
+    }).on('remove', () => {
+      if (plot) {
+        map.removeLayer(plot)
+      }
+    })
   }
   
   return layer
@@ -228,6 +243,9 @@ let examples = [{
 }, {
   title: 'Profile',
   url: 'coverages/profile.covjson'
+}, {
+  title: 'PointSeries',
+  url: 'coverages/pointseries.covjson'
 }, {
   title: 'Profile Collection',
   url: 'coverages/profile-collection.covjson'
