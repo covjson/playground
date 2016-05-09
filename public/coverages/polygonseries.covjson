@@ -1,0 +1,55 @@
+{
+  "type" : "Coverage",
+  "domain": {
+    "type": "Domain",
+    "domainType": "PolygonSeries",
+    "axes": {
+      "composite": {
+        "dataType": "Polygon",
+        "components": ["x","y"],
+        "values": [
+          [[[9.92,54.98],[9.93,54.59],[13.64,54.07],[15.01,51.10],[12.24,50.26],
+            [12.52,49.54],[13.59,48.87],[12.88,48.28],[13.02,47.63],[9.59,47.52],
+            [8.52,47.83],[7.46,47.62],[8.09,49.01],[6.18,49.46],[5.98,51.85],
+            [6.84,52.22],[7.10,53.69],[8.80,54.02],[8.52,54.96],[9.92,54.98]]]
+        ]
+      },
+      "t" : { "values": ["2013","2014","2015"] }
+    },
+    "referencing": [{
+      "components": ["x","y"],
+      "system": {
+        "type": "GeodeticCRS",
+        "id": "http://www.opengis.net/def/crs/OGC/1.3/CRS84"
+      }
+    }, {
+      "components": ["t"],
+      "system": {
+        "type": "TemporalRS",
+        "calendar": "Gregorian"
+      }
+    }]
+  },
+  "parameters" : {
+    "TEMP": {
+      "type" : "Parameter",
+      "unit" : {
+        "symbol" : "°C"
+      },
+      "observedProperty" : {
+        "label" : {
+          "en": "Average air temperature"
+        }
+      }
+    }
+  },
+  "ranges" : {
+    "TEMP": {
+      "type" : "NdArray",
+      "dataType": "float",
+      "axisNames": ["t"],
+      "shape": [3],
+      "values" : [ 17.3, 18.8, 20.8]
+    }
+  }
+}

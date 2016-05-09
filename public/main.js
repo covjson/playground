@@ -12,7 +12,7 @@ import LayerFactory from 'leaflet-coverage'
 import Legend from 'leaflet-coverage/controls/Legend.js'
 import TimeAxis from 'leaflet-coverage/controls/TimeAxis.js'
 import ProfilePlot from 'leaflet-coverage/popups/VerticalProfilePlot.js'
-import PointSeriesPlot from 'leaflet-coverage/popups/PointSeriesPlot.js'
+import TimeSeriesPlot from 'leaflet-coverage/popups/TimeSeriesPlot.js'
 import ParameterSync from 'leaflet-coverage/layers/ParameterSync.js'
 
 import {isDomain, isCoverage} from 'covutils/lib/validate.js'
@@ -150,8 +150,8 @@ function loadCov (url, options = {}) {
           firstLayer = layer
           layer.on('add', () => {
             zoomToLayers([layer])
-            if (isVerticalProfile(cov) || isPointSeries(cov)) {
-              layer.fire('click')
+            if (isVerticalProfile(cov) || isTimeSeries(cov)) {
+              layer.openPopup()
             }
           })
         }
@@ -184,9 +184,9 @@ function isVerticalProfile (cov) {
   return cov.domainProfiles.some(p => p.endsWith('VerticalProfile'))
 }
 
-function isPointSeries (cov) {
+function isTimeSeries (cov) {
   // TODO use full URI
-  return cov.domainProfiles.some(p => p.endsWith('PointSeries'))
+  return cov.domainProfiles.some(p => p.endsWith('PointSeries') || p.endsWith('PolygonSeries'))
 }
 
 function createLayer(cov, opts) {
@@ -205,29 +205,13 @@ function createLayer(cov, opts) {
     }
   }).on('dataLoading', () => map.fire('dataloading'))
     .on('dataLoad', () => map.fire('dataload'))
-  
+    
   if (isVerticalProfile(cov)) {
-    // we do that outside of the above 'add' handler since we want to register only once,
-    // not every time the layer is added to the map
-    let plot
-    layer.on('click', () => {
-      plot = new ProfilePlot(cov).addTo(map)
-    }).on('remove', () => {
-      if (plot) {
-        map.removeLayer(plot)
-      }
-    })
-  } else if (isPointSeries(cov)) {
-    let plot
-    layer.on('click', () => {
-      plot = new PointSeriesPlot(cov).addTo(map)
-    }).on('remove', () => {
-      if (plot) {
-        map.removeLayer(plot)
-      }
-    })
+    layer.bindPopup(new ProfilePlot(cov))
+  } else if (isTimeSeries(cov)) {
+    layer.bindPopup(new TimeSeriesPlot(cov))
   }
-  
+    
   return layer
 }
 
@@ -252,6 +236,9 @@ let examples = [{
 }, {
   title: 'MultiPolygon',
   url: 'coverages/multipolygon.covjson'
+}, {
+  title: 'PolygonSeries',
+  url: 'coverages/polygonseries.covjson'
 }, {
   title: 'Grid (Domain)',
   url: 'coverages/grid-domain.covjson'
