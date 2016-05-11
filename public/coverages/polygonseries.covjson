@@ -34,7 +34,13 @@
     "TEMP": {
       "type" : "Parameter",
       "unit" : {
-        "symbol" : "°C"
+        "label": {
+          "en": "Degree Celsius"
+        },
+        "symbol": {
+          "value": "Cel",
+          "type": "http://www.opengis.net/def/uom/UCUM/"
+        }
       },
       "observedProperty" : {
         "label" : {

@@ -65,7 +65,13 @@
       	"en": "The potential temperature, in degrees celcius, of the sea water"
       },
       "unit" : {
-        "symbol" : "°C"
+        "label": {
+          "en": "Degree Celsius"
+        },
+        "symbol": {
+          "value": "Cel",
+          "type": "http://www.opengis.net/def/uom/UCUM/"
+        }
       },
       "observedProperty" : {
         "id" : "http://vocab.nerc.ac.uk/standard_name/sea_water_potential_temperature/",

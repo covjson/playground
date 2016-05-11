@@ -35,7 +35,13 @@
       	"en": "Sea Ice concentration (ice=1;no ice=0)"
       },
       "unit" : {
-        "symbol" : "fraction"
+        "label": {
+          "en": "Ratio"
+        },
+        "symbol": {
+          "value": "1",
+          "type": "http://www.opengis.net/def/uom/UCUM/"
+        }
       },
       "observedProperty" : {
         "id" : "http://vocab.nerc.ac.uk/standard_name/sea_ice_area_fraction/",
