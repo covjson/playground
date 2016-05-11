@@ -231,6 +231,12 @@ let examples = [{
   title: 'PointSeries',
   url: 'coverages/pointseries.covjson'
 }, {
+  title: 'Point',
+  url: 'coverages/point.covjson'
+}, {
+  title: 'Point Collection',
+  url: 'coverages/point-collection.covjson'
+}, {
   title: 'Profile Collection',
   url: 'coverages/profile-collection.covjson'
 }, {
