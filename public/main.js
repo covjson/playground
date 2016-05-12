@@ -8,6 +8,7 @@ import 'leaflet-groupedlayercontrol/dist/leaflet.groupedlayercontrol.min.css!'
 import * as CovJSON from 'covjson-reader'
 import * as RestAPI from 'coverage-rest-client'
 import LayerFactory from 'leaflet-coverage'
+import {getLayerClass} from 'leaflet-coverage'
 
 import Legend from 'leaflet-coverage/controls/Legend.js'
 import TimeAxis from 'leaflet-coverage/controls/TimeAxis.js'
@@ -101,8 +102,10 @@ function loadCov (url, options = {}) {
     // add each parameter as a layer
     let firstLayer
     
-    if (cov.coverages) {
-      // collection
+    let layerClazz = getLayerClass(cov)
+    
+    if (cov.coverages && !layerClazz) {
+      // generic collection
       if (!cov.parameters) {
         throw new Error('Only coverage collections with a "parameters" property are supported')
       }
@@ -132,9 +135,9 @@ function loadCov (url, options = {}) {
             })  
           }
         }
-      }      
-    } else if (isCoverage(cov)) {
-      // single coverage
+      }
+    } else if (layerClazz) {
+      // single coverage or a coverage collection of a specific domain type
       
       // TODO use jsonld to properly query graph (together with using cov.id as reference point)
       if (cov.ld && cov.ld.inCollection) {
@@ -150,8 +153,10 @@ function loadCov (url, options = {}) {
           firstLayer = layer
           layer.on('add', () => {
             zoomToLayers([layer])
-            if (isVerticalProfile(cov) || isTimeSeries(cov)) {
-              layer.openPopup()
+            if (!cov.coverages) {
+              if (isVerticalProfile(cov) || isTimeSeries(cov)) {
+                layer.openPopup()
+              } 
             }
           })
         }
@@ -181,12 +186,12 @@ function zoomToLayers (layers) {
 
 function isVerticalProfile (cov) {
   // TODO use full URI
-  return cov.domainProfiles.some(p => p.endsWith('VerticalProfile'))
+  return cov.domainType && cov.domainType.endsWith('VerticalProfile')
 }
 
 function isTimeSeries (cov) {
   // TODO use full URI
-  return cov.domainProfiles.some(p => p.endsWith('PointSeries') || p.endsWith('PolygonSeries'))
+  return cov.domainType && (cov.domainType.endsWith('PointSeries') || cov.domainType.endsWith('PolygonSeries'))
 }
 
 function createLayer(cov, opts) {
@@ -200,16 +205,26 @@ function createLayer(cov, opts) {
     // See the code above where ParameterSync gets instantiated.
     paramSync.addLayer(covLayer)
     
-    if (covLayer.time) {
-      new TimeAxis(covLayer).addTo(map)
+    if (!cov.coverages) {
+      if (covLayer.time) {
+        new TimeAxis(covLayer).addTo(map)
+      } 
     }
   }).on('dataLoading', () => map.fire('dataloading'))
     .on('dataLoad', () => map.fire('dataload'))
-    
-  if (isVerticalProfile(cov)) {
-    layer.bindPopup(new ProfilePlot(cov))
-  } else if (isTimeSeries(cov)) {
-    layer.bindPopup(new TimeSeriesPlot(cov))
+  
+  if (cov.coverages) {
+    if (isVerticalProfile(cov)) {
+      layer.bindPopupEach(coverage => new ProfilePlot(coverage))
+    } else if (isTimeSeries(cov)) {
+      layer.bindPopupEach(coverage => new TimeSeriesPlot(coverage))
+    }
+  } else {
+    if (isVerticalProfile(cov)) {
+      layer.bindPopup(new ProfilePlot(cov))
+    } else if (isTimeSeries(cov)) {
+      layer.bindPopup(new TimeSeriesPlot(cov))
+    }
   }
     
   return layer
