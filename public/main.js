@@ -110,12 +110,10 @@ function loadCov (url, options = {}) {
         throw new Error('Only coverage collections with a "parameters" property are supported')
       }
             
-      for (let key of cov.parameters.keys()) {
-        let opts = {keys: [key]}
-        
+      for (let key of cov.parameters.keys()) {        
         let layers = cov.coverages
           .filter(coverage => coverage.parameters.has(key))
-          .map(coverage => createLayer(coverage, opts))
+          .map(coverage => createLayer(coverage, {keys: [key]}))
         let layer = L.layerGroup(layers)
         layersOnMap.add(layer)
         
