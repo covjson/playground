@@ -17,7 +17,7 @@ import TimeSeriesPlot from 'leaflet-coverage/popups/TimeSeriesPlot.js'
 import ParameterSync from 'leaflet-coverage/layers/ParameterSync.js'
 
 import {isDomain, isCoverage} from 'covutils/lib/validate.js'
-import {toCoverage} from 'covutils/lib/transform.js'
+import {fromDomain} from 'covutils/lib/coverage/create.js'
 
 import CodeMirror from 'codemirror'
 
@@ -93,7 +93,7 @@ function loadCov (url, options = {}) {
     .then(cov => {
       
     if (isDomain(cov)) {
-      cov = toCoverage(cov)
+      cov = fromDomain(cov)
     }
       
     map.fire('dataload')
