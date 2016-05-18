@@ -2,8 +2,8 @@
   "type" : "Domain",
   "domainType" : "Grid",
   "axes": {
-    "x" : { "values": [-10,-5,0] },
-    "y" : { "values": [40,50] }
+    "x" : { "start": -10, "stop":0, "num": 10 },
+    "y" : { "start": 40, "stop": 50, "num": 20 }
   },
   "referencing": [{
     "components": ["x","y"],
