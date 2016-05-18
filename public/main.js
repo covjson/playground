@@ -16,7 +16,8 @@ import ProfilePlot from 'leaflet-coverage/popups/VerticalProfilePlot.js'
 import TimeSeriesPlot from 'leaflet-coverage/popups/TimeSeriesPlot.js'
 import ParameterSync from 'leaflet-coverage/layers/ParameterSync.js'
 
-import {isDomain, isCoverage} from 'covutils/lib/validate.js'
+import {isDomain} from 'covutils/lib/validate.js'
+import {getLanguageString as i18n} from 'covutils/lib/i18n.js'
 import {fromDomain} from 'covutils/lib/coverage/create.js'
 
 import CodeMirror from 'codemirror'
@@ -33,6 +34,8 @@ let map = L.map(mapEl, {
   center: [10, 0],
   zoom: 2
 })
+
+L.control.scale().addTo(map)
 
 let baseLayers = {
   'OSM':
@@ -66,10 +69,10 @@ let paramSync = new ParameterSync({
     }
   })
 
-let layersOnMap = new Set()
+let layersInControl = new Set()
 
 function removeLayers () {
-  for (let layer of layersOnMap) {
+  for (let layer of layersInControl) {
     layerControl.removeLayer(layer)
     if (map.hasLayer(layer)) {
       // FIXME leaflet's internal state breaks if layers or controls throw exceptions in onAdd()
@@ -79,7 +82,7 @@ function removeLayers () {
       } catch (e) {}
     }
   }
-  layersOnMap = new Set()
+  layersInControl = new Set()
 }
 
 function loadCov (url, options = {}) {
@@ -115,7 +118,7 @@ function loadCov (url, options = {}) {
           .filter(coverage => coverage.parameters.has(key))
           .map(coverage => createLayer(coverage, {keys: [key]}))
         let layer = L.layerGroup(layers)
-        layersOnMap.add(layer)
+        layersInControl.add(layer)
         
         layerControl.addOverlay(layer, key, group)
         if (!firstLayer) {
@@ -129,6 +132,9 @@ function loadCov (url, options = {}) {
               ++addCount
               if (addCount === layers.length) {
                 zoomToLayers(layers)
+                // TODO temporary to support value popup below
+                // FIXME is this the right place??
+                map.fire('covlayeradd')
               }
             })  
           }
@@ -144,7 +150,7 @@ function loadCov (url, options = {}) {
       for (let key of cov.parameters.keys()) {
         let opts = {keys: [key]}
         let layer = createLayer(cov, opts)
-        layersOnMap.add(layer)
+        layersInControl.add(layer)
         
         layerControl.addOverlay(layer, key, group)
         if (!firstLayer) {
@@ -158,6 +164,12 @@ function loadCov (url, options = {}) {
             }
           })
         }
+        layer.on('add', () => {
+          // TODO temporary to support value popup below
+          map.fire('covlayeradd')
+        }).on('remove', () => {
+          map.fire('covlayerremove')
+        })
       }
     } else {
       throw new Error('unsupported type')
@@ -279,11 +291,7 @@ function loadFromHash () {
 if (window.location.hash) {
   loadFromHash()
 } else {
-  editor.json = 
-`{
-  "type": "CoverageCollection",
-  "coverages": []
-}`  
+  editor.json = '{}'  
 }
 
 window.addEventListener("hashchange", loadFromHash, false)
@@ -298,3 +306,74 @@ window.api = {
     cm: editor.cm,
     CodeMirror
 }
+
+// Value popup
+// TODO transform to draggable popup-like marker and update on drag
+let valuePopup
+map.on('click', e => {
+  valuePopup = getValuePopup(e.latlng)
+  if (valuePopup) {
+    valuePopup.openOn(map)
+  }
+})
+
+map.on('covlayeradd', updateValuePopup)
+map.on('covlayerremove', updateValuePopup)
+
+function updateValuePopup () {
+  if (valuePopup && map.hasLayer(valuePopup)) {
+    let newValuePopup = getValuePopup(valuePopup.getLatLng())
+    if (newValuePopup) {
+      newValuePopup.openOn(map)
+    } else {
+      map.closePopup(valuePopup)
+    }
+    valuePopup = newValuePopup
+  }
+}
+
+function getValuePopup (latlng) {
+  let html = ''
+    
+  for (let layer of layersInControl) {
+    if (!map.hasLayer(layer)) continue
+    
+    let fn = layer.getValueAt || layer.getValue
+    if (!fn) continue
+    let maxDistance = getMetersPerPixel(map) * 20 // 20px search radius
+    let val = fn.call(layer, latlng, maxDistance)
+    if (val == null) continue
+    let param = layer.parameter
+    
+    // TODO move to covutils as utility function
+    if (param.categoryEncoding) {
+      for (let [catId,vals] of param.categoryEncoding) {
+        if (vals.indexOf(val) !== -1) {
+          let cat = param.observedProperty.categories.filter(c => c.id === catId)[0]
+          val = i18n(cat.label)
+          break
+        }
+      }
+    }
+    html += '<div><strong>' + i18n(param.observedProperty.label) + '</strong>: ' + val + '</div>'
+  }
+  if (!html) {
+    return
+  }
+  let popup = L.popup()
+    .setLatLng(latlng)
+    .setContent(html)
+  return popup
+}
+
+function getMetersPerPixel (map) {
+  // from L.Control.Scale
+  let bounds = map.getBounds()
+  let centerLat = bounds.getCenter().lat
+  let halfWorldMeters = 6378137 * Math.PI * Math.cos(centerLat * Math.PI / 180)
+  let dist = halfWorldMeters * (bounds.getNorthEast().lng - bounds.getSouthWest().lng) / 180
+  let size = map.getSize()
+  let perpx = dist / size.x
+  return perpx
+}
+

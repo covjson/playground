@@ -141,7 +141,7 @@ button.active {
 }
 
 .file-bar {
-	  z-index: 10;
+	  z-index: 1001;
     position:absolute;
     top:0;
     right:50px;
