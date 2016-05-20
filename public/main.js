@@ -17,14 +17,14 @@ import TimeSeriesPlot from 'leaflet-coverage/popups/TimeSeriesPlot.js'
 import ParameterSync from 'leaflet-coverage/layers/ParameterSync.js'
 
 import {isDomain} from 'covutils/lib/validate.js'
-import {getLanguageString as i18n} from 'covutils/lib/i18n.js'
 import {fromDomain} from 'covutils/lib/coverage/create.js'
-import {getCategory} from 'covutils/lib/parameter.js'
 
 import CodeMirror from 'codemirror'
 
 import FileMenu from './FileMenu.js'
 import Editor from './Editor.js'
+
+import DraggableValuePopup from 'leaflet-coverage/popups/DraggableValuePopup.js'
 
 import './style.css!'
 
@@ -71,6 +71,7 @@ let paramSync = new ParameterSync({
   })
 
 let layersInControl = new Set()
+let coverageLayersOnMap = new Set()
 
 function removeLayers () {
   for (let layer of layersInControl) {
@@ -118,6 +119,7 @@ function loadCov (url, options = {}) {
         let layers = cov.coverages
           .filter(coverage => coverage.parameters.has(key))
           .map(coverage => createLayer(coverage, {keys: [key]}))
+        layers.forEach(covlayer => map.fire('covlayercreate', {layer: covlayer}))
         let layer = L.layerGroup(layers)
         layersInControl.add(layer)
         
@@ -130,12 +132,12 @@ function loadCov (url, options = {}) {
           let addCount = 0
           for (let l of layers) {
             l.on('add', () => {
+              coverageLayersOnMap.add(l)
               ++addCount
               if (addCount === layers.length) {
                 zoomToLayers(layers)
-                // TODO temporary to support value popup below
-                // FIXME is this the right place??
-                map.fire('covlayeradd')
+                // FIXME is this the right place?? define event semantics!
+                map.fire('covlayeradd', {layer: l})
               }
             })  
           }
@@ -151,6 +153,7 @@ function loadCov (url, options = {}) {
       for (let key of cov.parameters.keys()) {
         let opts = {keys: [key]}
         let layer = createLayer(cov, opts)
+        map.fire('covlayercreate', {layer})
         layersInControl.add(layer)
         
         layerControl.addOverlay(layer, key, group)
@@ -166,10 +169,11 @@ function loadCov (url, options = {}) {
           })
         }
         layer.on('add', () => {
-          // TODO temporary to support value popup below
-          map.fire('covlayeradd')
+          coverageLayersOnMap.add(layer)
+          map.fire('covlayeradd', {layer})
         }).on('remove', () => {
-          map.fire('covlayerremove')
+          coverageLayersOnMap.delete(layer)
+          map.fire('covlayerremove', {layer})
         })
       }
     } else {
@@ -308,73 +312,30 @@ window.api = {
     CodeMirror
 }
 
-// Value popup
-// TODO transform to draggable popup-like marker and update on drag
-
-map.on('click', e => openValuePopup(e.latlng))
-
+// Wire up coverage value popup
 let valuePopup
 function openValuePopup (latlng) {
-  valuePopup = getValuePopup(latlng)
-  if (valuePopup) {
-    valuePopup.openOn(map)
-  }
+  valuePopup = new DraggableValuePopup({
+    className: 'leaflet-popup-draggable',
+    layers: coverageLayersOnMap
+  }).setLatLng(latlng)
+    .openOn(map)
 }
 
-map.on('covlayeradd', addEvent => {
-  updateValuePopup()
-  // FIXME implement
-  // add click listener only once when layer created, not each time when added to the map
-  //addEvent.layer.on('click', clickEvent => openValuePopup(clickEvent.latlng))
+map.on('click', e => openValuePopup(e.latlng))
+map.on('covlayercreate', createEvent => {
+  createEvent.layer.on('click', clickEvent => {
+    openValuePopup(clickEvent.latlng)
+  })  
 })
-map.on('covlayerremove', updateValuePopup)
-
-function updateValuePopup () {
-  if (valuePopup && map.hasLayer(valuePopup)) {
-    let newValuePopup = getValuePopup(valuePopup.getLatLng())
-    if (newValuePopup) {
-      newValuePopup.openOn(map)
-    } else {
-      map.closePopup(valuePopup)
-    }
-    valuePopup = newValuePopup
+map.on('covlayeradd', e => {
+  if (valuePopup) {
+    valuePopup.addCoverageLayer(e.layer)
   }
-}
-
-function getValuePopup (latlng) {
-  let html = ''
-    
-  for (let layer of layersInControl) {
-    if (!map.hasLayer(layer) || !layer.getValueAt) continue
-    
-    let maxDistance = getMetersPerPixel(map) * 20 // 20px search radius
-    let val = layer.getValueAt(latlng, maxDistance)
-    if (val == null) continue
-    let param = layer.parameter
-    
-    if (param.categoryEncoding) {
-      let cat = getCategory(param, val)
-      val = i18n(cat.label)
-    }
-    html += '<div><strong>' + i18n(param.observedProperty.label) + '</strong>: ' + val + '</div>'
+})
+map.on('covlayerremove', e => {
+  if (valuePopup) {
+    valuePopup.removeCoverageLayer(e.layer)
   }
-  if (!html) {
-    return
-  }
-  let popup = L.popup()
-    .setLatLng(latlng)
-    .setContent(html)
-  return popup
-}
-
-function getMetersPerPixel (map) {
-  // from L.Control.Scale
-  let bounds = map.getBounds()
-  let centerLat = bounds.getCenter().lat
-  let halfWorldMeters = 6378137 * Math.PI * Math.cos(centerLat * Math.PI / 180)
-  let dist = halfWorldMeters * (bounds.getNorthEast().lng - bounds.getSouthWest().lng) / 180
-  let size = map.getSize()
-  let perpx = dist / size.x
-  return perpx
-}
+})
 
