@@ -336,12 +336,10 @@ function getValuePopup (latlng) {
   let html = ''
     
   for (let layer of layersInControl) {
-    if (!map.hasLayer(layer)) continue
+    if (!map.hasLayer(layer) || !layer.getValueAt) continue
     
-    let fn = layer.getValueAt || layer.getValue
-    if (!fn) continue
     let maxDistance = getMetersPerPixel(map) * 20 // 20px search radius
-    let val = fn.call(layer, latlng, maxDistance)
+    let val = layer.getValueAt(latlng, maxDistance)
     if (val == null) continue
     let param = layer.parameter
     
