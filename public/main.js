@@ -19,6 +19,7 @@ import ParameterSync from 'leaflet-coverage/layers/ParameterSync.js'
 import {isDomain} from 'covutils/lib/validate.js'
 import {getLanguageString as i18n} from 'covutils/lib/i18n.js'
 import {fromDomain} from 'covutils/lib/coverage/create.js'
+import {getCategory} from 'covutils/lib/parameter.js'
 
 import CodeMirror from 'codemirror'
 
@@ -309,15 +310,23 @@ window.api = {
 
 // Value popup
 // TODO transform to draggable popup-like marker and update on drag
+
+map.on('click', e => openValuePopup(e.latlng))
+
 let valuePopup
-map.on('click', e => {
-  valuePopup = getValuePopup(e.latlng)
+function openValuePopup (latlng) {
+  valuePopup = getValuePopup(latlng)
   if (valuePopup) {
     valuePopup.openOn(map)
   }
-})
+}
 
-map.on('covlayeradd', updateValuePopup)
+map.on('covlayeradd', addEvent => {
+  updateValuePopup()
+  // FIXME implement
+  // add click listener only once when layer created, not each time when added to the map
+  //addEvent.layer.on('click', clickEvent => openValuePopup(clickEvent.latlng))
+})
 map.on('covlayerremove', updateValuePopup)
 
 function updateValuePopup () {
@@ -343,15 +352,9 @@ function getValuePopup (latlng) {
     if (val == null) continue
     let param = layer.parameter
     
-    // TODO move to covutils as utility function
     if (param.categoryEncoding) {
-      for (let [catId,vals] of param.categoryEncoding) {
-        if (vals.indexOf(val) !== -1) {
-          let cat = param.observedProperty.categories.filter(c => c.id === catId)[0]
-          val = i18n(cat.label)
-          break
-        }
-      }
+      let cat = getCategory(param, val)
+      val = i18n(cat.label)
     }
     html += '<div><strong>' + i18n(param.observedProperty.label) + '</strong>: ' + val + '</div>'
   }
