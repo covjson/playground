@@ -15,6 +15,7 @@ import TimeAxis from 'leaflet-coverage/controls/TimeAxis.js'
 import ProfilePlot from 'leaflet-coverage/popups/VerticalProfilePlot.js'
 import TimeSeriesPlot from 'leaflet-coverage/popups/TimeSeriesPlot.js'
 import ParameterSync from 'leaflet-coverage/layers/ParameterSync.js'
+import {COVJSON_VERTICALPROFILE, COVJSON_POINTSERIES, COVJSON_POLYGONSERIES} from 'leaflet-coverage/util/constants.js'
 
 import {isDomain} from 'covutils/lib/validate.js'
 import {fromDomain} from 'covutils/lib/coverage/create.js'
@@ -200,13 +201,11 @@ function zoomToLayers (layers) {
 }
 
 function isVerticalProfile (cov) {
-  // TODO use full URI
-  return cov.domainType && cov.domainType.endsWith('VerticalProfile')
+  return cov.domainType === COVJSON_VERTICALPROFILE
 }
 
 function isTimeSeries (cov) {
-  // TODO use full URI
-  return cov.domainType && (cov.domainType.endsWith('PointSeries') || cov.domainType.endsWith('PolygonSeries'))
+  return cov.domainType === COVJSON_POINTSERIES || cov.domainType === COVJSON_POLYGONSERIES
 }
 
 function createLayer(cov, opts) {
