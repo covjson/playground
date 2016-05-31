@@ -5,7 +5,7 @@
     "domainType": "MultiPolygon",
     "axes": {
       "composite": {
-        "dataType": "Polygon",
+        "dataType": "polygon",
         "components": ["x","y"],
         "values": [
           [[[9.92,54.98],[9.93,54.59],[13.64,54.07],[15.01,51.10],[12.24,50.26],

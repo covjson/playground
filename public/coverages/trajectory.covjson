@@ -5,7 +5,7 @@
     "domainType" : "Trajectory",
     "axes": {
       "composite": {
-        "dataType": "Tuple",
+        "dataType": "tuple",
         "components": ["t","x","y","z"],
         "values": [
           ["2010-01-01T00:12:20Z", -10, 40, 5],
