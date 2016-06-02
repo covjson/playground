@@ -20,7 +20,7 @@
       "codemirror": "npm:codemirror@^5.7.0",
       "coverage-rest-client": "github:Reading-eScience-Centre/coverage-rest-client@master",
       "covjson-reader": "npm:covjson-reader@^0.11.3",
-      "covutils": "npm:covutils@^0.2.1",
+      "covutils": "npm:covutils@^0.2.6",
       "css": "github:systemjs/plugin-css@^0.1.13",
       "fetch": "npm:whatwg-fetch@^0.11.0",
       "font-awesome": "npm:font-awesome@4.5.0",

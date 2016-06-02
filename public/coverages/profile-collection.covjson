@@ -28,7 +28,7 @@
     "system": {
       "type": "VerticalCRS",
       "cs": {
-        "axes": [{
+        "csAxes": [{
           "name": {
             "en": "Pressure"
           },

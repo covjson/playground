@@ -12,6 +12,7 @@ import {getLayerClass} from 'leaflet-coverage'
 
 import Legend from 'leaflet-coverage/controls/Legend.js'
 import TimeAxis from 'leaflet-coverage/controls/TimeAxis.js'
+import VerticalAxis from 'leaflet-coverage/controls/VerticalAxis.js'
 import ProfilePlot from 'leaflet-coverage/popups/VerticalProfilePlot.js'
 import TimeSeriesPlot from 'leaflet-coverage/popups/TimeSeriesPlot.js'
 import ParameterSync from 'leaflet-coverage/layers/ParameterSync.js'
@@ -222,7 +223,10 @@ function createLayer(cov, opts) {
     if (!cov.coverages) {
       if (covLayer.time) {
         new TimeAxis(covLayer).addTo(map)
-      } 
+      }
+      if (covLayer.vertical) {
+        new VerticalAxis(covLayer).addTo(map)
+      }
     }
   }).on('dataLoading', () => map.fire('dataloading'))
     .on('dataLoad', () => map.fire('dataload'))
