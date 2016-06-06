@@ -320,7 +320,7 @@ let valuePopup
 function openValuePopup (latlng) {
   valuePopup = new DraggableValuePopup({
     className: 'leaflet-popup-draggable',
-    layers: coverageLayersOnMap
+    layers: [...coverageLayersOnMap]
   }).setLatLng(latlng)
     .openOn(map)
 }
