@@ -1,0 +1,18 @@
+{
+  "type": "NdArray",
+  "dataType": "integer",
+  "axisNames": ["t", "y", "x"],
+  "shape": [2, 2, 1],
+  "values": [
+
+
+                                        30,
+                                        40,
+
+    
+
+
+                                        80,
+                                        90
+  ]
+}

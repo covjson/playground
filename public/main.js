@@ -255,6 +255,9 @@ let examples = [{
   title: 'Grid (Categorical)',
   url: 'coverages/grid-categorical.covjson'
 }, {
+  title: 'Grid (Tiled)',
+  url: 'coverages/grid-tiled.covjson'
+}, {
   title: 'Trajectory',
   url: 'coverages/trajectory.covjson'
 }, {
