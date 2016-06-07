@@ -38,7 +38,7 @@
       "dataType": "integer",
       "axisNames": ["t", "y", "x"],
       "shape": [2, 5, 10],
-      "tilesets": [{
+      "tileSets": [{
         "tileShape": [null, 2, 3],
         "urlTemplate": "http://reading-escience-centre.github.io/covjson-playground/coverages/grid-tiled/a/{y}-{x}.covjson"
       }, {
