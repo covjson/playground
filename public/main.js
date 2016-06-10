@@ -10,6 +10,7 @@ import * as RestAPI from 'coverage-rest-client'
 import LayerFactory from 'leaflet-coverage'
 import {getLayerClass} from 'leaflet-coverage'
 
+import 'c3/c3.css!'
 import Legend from 'leaflet-coverage/controls/Legend.js'
 import TimeAxis from 'leaflet-coverage/controls/TimeAxis.js'
 import VerticalAxis from 'leaflet-coverage/controls/VerticalAxis.js'

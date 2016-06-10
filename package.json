@@ -17,6 +17,7 @@
       "baseURL": "public"
     },
     "dependencies": {
+      "c3": "npm:c3@^0.4.11",
       "codemirror": "npm:codemirror@^5.7.0",
       "coverage-rest-client": "github:Reading-eScience-Centre/coverage-rest-client@master",
       "covjson-reader": "npm:covjson-reader@^0.12.1",
