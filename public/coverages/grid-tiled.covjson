@@ -40,13 +40,13 @@
       "shape": [2, 5, 10],
       "tileSets": [{
         "tileShape": [null, 2, 3],
-        "urlTemplate": "http://reading-escience-centre.github.io/covjson-playground/coverages/grid-tiled/a/{y}-{x}.covjson"
+        "urlTemplate": "http://covjson.org/playground/coverages/grid-tiled/a/{y}-{x}.covjson"
       }, {
         "tileShape": [1, null, null],
-        "urlTemplate": "http://reading-escience-centre.github.io/covjson-playground/coverages/grid-tiled/b/{t}.covjson"
+        "urlTemplate": "http://covjson.org/playground/coverages/grid-tiled/b/{t}.covjson"
       }, {
         "tileShape": [null, null, null],
-        "urlTemplate": "http://reading-escience-centre.github.io/covjson-playground/coverages/grid-tiled/c/all.covjson"
+        "urlTemplate": "http://covjson.org/playground/coverages/grid-tiled/c/all.covjson"
       }]
     }
   }
