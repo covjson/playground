@@ -1,6 +1,6 @@
 # CoverageJSON Playground
 
-https://reading-escience-centre.github.io/covjson-playground
+http://covjson.org/playground/
 
 ## Development setup
 
@@ -17,4 +17,4 @@ Now go to <http://localhost:8081>.
 ## Bundle creation for production use
 
 A final minified bundle including all JavaScript and CSS code can be created with `npm run build`.
-See the `gh-pages` branch on how to include the bundle into a page.
+See the [covjson/covjson.github.io](https://github.com/covjson/covjson.github.io) reposiroty on how to include the bundle into a page.
