@@ -1,55 +1,47 @@
-html, body { 
-	margin: 0;
-	padding: 0;
-	font-family: 'Open Sans', 'Helvetica Neue', sans-serif;
+.playground select[disabled] {
+    cursor: not-allowed;
 }
 
-:focus {
-    outline: none;
+.playground {
+  position: relative;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
 }
 
-a {
-  color:#2980b9;
-  text-decoration:none;
+.playground .map {
+  width: 50%;
 }
 
-a:hover {
-    color:#199CF4;
+body.fullscreen .playground .right {
+  position: relative;
+  border-bottom: 1px solid #d9d9d9;
+  overflow-y: hidden;
 }
 
-.map {
-	position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 40%;
+body.fullscreen .playground .map {
+  width: 100%;
 }
 
-body.fullscreen .map {
-    right:0;
-}
-
-body.fullscreen .right {
-    height:40px;
-    bottom:auto;
-    border-bottom: 1px solid #d9d9d9;
-    overflow-y: hidden;
-}
-
-body.fullscreen .right .top .buttons {
-    display:none;
-}
-
-body.fullscreen .leaflet-control-layers { margin-top:50px; }
-
-.right {
-  overflow-x:hidden;
-  position:absolute;
-  bottom:0;
-  top:0;
+body.fullscreen .playground .right {
+  position: absolute;
+  height:40px;
+  bottom:auto;
   right:0;
-  width:40%;
-  min-width:400px;
+  border-bottom: 1px solid #d9d9d9;
+  overflow-y: hidden;
+}
+
+body.fullscreen .playground .right .top .buttons {
+  display:none;
+}
+
+body.fullscreen .playground .leaflet-control-layers { margin-top:50px; }
+
+.playground .right {
+  width: 50%;
+  overflow-x:hidden;
+  position:relative;
   box-sizing:border-box;
   background:#fff;
   transition:all 200ms;
@@ -58,16 +50,16 @@ body.fullscreen .leaflet-control-layers { margin-top:50px; }
   line-height: 20px; 
 }
 
-@media screen and (max-width:1300px) {
-  .map {
-    right:50%;
+@media screen and (min-width:1400px) {
+  .playground .map {
+    flex-grow:1;
   }
-  .right {
-    width:50%;
+  .playground .right {
+    width:700px;
   }
 }
 
-.right .pane {
+.playground .right .pane {
   position:absolute;
   top:40px;
   bottom:0;
@@ -75,7 +67,7 @@ body.fullscreen .leaflet-control-layers { margin-top:50px; }
   overflow:auto;
 }
 
-.right .CodeMirror {
+.playground .right .CodeMirror {
   position:absolute;
   bottom:0;
   right:0;
@@ -87,11 +79,11 @@ body.fullscreen .leaflet-control-layers { margin-top:50px; }
   line-height:1.5em;
 }
 
-.CodeMirror-gutters {
+.playground .CodeMirror-gutters {
     background:#fff !important;
 }
 
-button {
+.playground button {
     background:#fff;
     font: inherit;
     cursor:pointer;
@@ -101,16 +93,16 @@ button {
     box-sizing:border-box;
 }
 
-button.active {
+.playground button.active {
     background:#34495e;
     color:#fff;
 }
 
-.top {
+.playground .top {
     background:#eee;
 }
 
-.top .collapse-button {
+.playground .top .collapse-button {
     position:absolute;
     top:0;
     left:0;
@@ -121,12 +113,12 @@ button.active {
     border:none;
 }
 
-.top .buttons {
+.playground .top .buttons {
     margin-left:28px;
     height:40px;
 }
 
-.top .buttons button {
+.playground .top .buttons button {
     padding:10px 15px;
     font-weight:normal;
     height:40px;
@@ -134,14 +126,14 @@ button.active {
     vertical-align:top;
 }
 
-.top .buttons button span.icon {
+.playground .top .buttons button span.icon {
     font-size:16px;
     margin-right:5px;
     vertical-align:middle;
 }
 
-.file-bar {
-	  z-index: 1001;
+.playground .file-bar {
+    z-index: 1001;
     position:absolute;
     top:0;
     right:50px;
@@ -150,64 +142,71 @@ button.active {
     line-height:40px;
 }
 
-.file-bar .name {
+body.fullscreen .playground .file-bar {
+	height:39px;
+}
+
+.playground .file-bar .name {
     padding:0 10px;
     display:inline-block;
     vertical-align:top;
     background:#fff;
 }
 
-.file-bar .name .filename {
+.playground .file-bar .name .filename {
     margin-left:10px;
 }
 
-.file-bar div.item {
+.playground .file-bar div.item {
     display:inline-block;
 }
 
-.file-bar div.item a.parent {
+.playground .file-bar div.item a.parent {
     padding:0 10px;
     height: 40px;
     display: inline-block;
     background:#fff;
 }
+body.fullscreen .playground .file-bar div.item a.parent {
+	height: 39px;
+}
 
-.file-bar a:hover {
+.playground .file-bar a:hover {
     cursor:pointer;
     background:#34495e;
     color:#fff;
 }
 
-.file-bar div.item:hover a.parent, .file-bar div.item:focus a.parent {
+.playground .file-bar div.item:hover a.parent, .file-bar div.item:focus a.parent {
     background:#34495e;
     color:#fff;
 }
 
-.file-bar div.item:hover div.children, .file-bar div.item:focus div.children {
+.playground .file-bar div.item:hover div.children, .file-bar div.item:focus div.children {
     display:block;
 }
 
-div.children {
+.playground div.children {
     display:none;
     position:absolute;
     margin-top:-1px;
 }
 
-div.children a {
+.playground div.children a {
     display: block;
     padding: 5px 10px;
     line-height: 20px;
     background:#fff;
 }
 
-.leaflet-control-layers-group-label {
-	max-width: 250px;
+.playground .leaflet-control-layers-group-label {
+  max-width: 250px;
   text-overflow: ellipsis;
   white-space: nowrap;
   overflow: hidden;
 }
 
-.info {
+.playground .info {
   padding: 6px 8px;
   font: 14px/16px Arial, Helvetica, sans-serif;
   background: white;
@@ -216,6 +215,6 @@ div.children a {
   border-radius: 5px;
 }
 
-.leaflet-popup-draggable .leaflet-popup-content-wrapper {
-	cursor: move
+.playground .leaflet-popup-draggable .leaflet-popup-content-wrapper {
+  cursor: move
 }
