@@ -4,6 +4,7 @@ import 'leaflet-loading'
 import 'leaflet-loading/src/Control.Loading.css!'
 import 'leaflet-groupedlayercontrol'
 import 'leaflet-groupedlayercontrol/dist/leaflet.groupedlayercontrol.min.css!'
+import './leaflet-singleclick.js'
 
 import * as CovJSON from 'covjson-reader'
 import * as RestAPI from 'coverage-rest-client'
@@ -329,7 +330,7 @@ function openValuePopup (latlng) {
     .openOn(map)
 }
 
-map.on('click', e => openValuePopup(e.latlng))
+map.on('singleclick', e => openValuePopup(e.latlng))
 map.on('covlayercreate', createEvent => {
   createEvent.layer.on('click', clickEvent => {
     openValuePopup(clickEvent.latlng)
