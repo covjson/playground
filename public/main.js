@@ -313,7 +313,13 @@ function openValuePopup (latlng) {
 
 map.on('singleclick', e => openValuePopup(e.latlng))
 map.on('covlayercreate', createEvent => {
-  createEvent.layer.on('click', clickEvent => {
+  let layer = createEvent.layer
+  // TODO can we make this more clever?
+  if (layer instanceof C.VerticalProfileCollection) {
+    // don't show a value popup as we already show a plot popup
+    return
+  }
+  layer.on('click', clickEvent => {
     openValuePopup(clickEvent.latlng)
   })  
 })
