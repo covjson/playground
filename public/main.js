@@ -2,8 +2,6 @@ import L from 'leaflet'
 import 'leaflet/dist/leaflet.css!'
 import 'leaflet-loading'
 import 'leaflet-loading/src/Control.Loading.css!'
-//import 'leaflet-groupedlayercontrol'
-//import 'leaflet-groupedlayercontrol/dist/leaflet.groupedlayercontrol.min.css!'
 
 import './leaflet-singleclick.js'
 
@@ -39,7 +37,6 @@ let baseLayers = {
 }
 baseLayers['OSM'].addTo(map)
 
-//let layerControl = L.control.groupedLayers([], [], {collapsed: false}).addTo(map)
 let layerControl = L.control.layers([], [], {collapsed: false}).addTo(map)
 
 // We use ParameterSync here so that multiple coverage layers that display the same
@@ -81,9 +78,7 @@ function removeLayers () {
 
 function loadCov (url, options = {}) {
   removeLayers()
-  
-  let group = options.group || 'Parameters'
-  
+    
   map.fire('dataloading')
   CovJSON.read(url)
     .then(cov => RestAPI.wrap(cov, {loader: CovJSON.read}))
@@ -115,7 +110,7 @@ function loadCov (url, options = {}) {
         let layer = L.layerGroup(layers)
         layersInControl.add(layer)
         
-        layerControl.addOverlay(layer, key, group)
+        layerControl.addOverlay(layer, key)
         if (!firstLayer) {
           firstLayer = layer
 
@@ -137,18 +132,14 @@ function loadCov (url, options = {}) {
       }
     } else if (layerClazz) {
       // single coverage or a coverage collection of a specific domain type
-      
-      // TODO use jsonld to properly query graph (together with using cov.id as reference point)
-      if (cov.ld && cov.ld.inCollection) {
-        group += '<br />(part of <a href="' + cov.ld.inCollection.id + '">linked collection</a>)'
-      }
+
       for (let key of cov.parameters.keys()) {
         let opts = {keys: [key]}
         let layer = createLayer(cov, opts)
         map.fire('covlayercreate', {layer})
         layersInControl.add(layer)
         
-        layerControl.addOverlay(layer, key, group)
+        layerControl.addOverlay(layer, key)
         if (!firstLayer) {
           firstLayer = layer
           layer.on('add', () => {
@@ -183,7 +174,8 @@ function loadCov (url, options = {}) {
 }
 
 function zoomToLayers (layers) {
-  let bounds = L.latLngBounds(layers.map(l => l.getBounds()))
+  let bnds = layers.map(l => l.getBounds())
+  let bounds = L.latLngBounds(bnds)
   let opts
   if (bounds.getWest() === bounds.getEast() && bounds.getSouth() === bounds.getNorth()) {
     opts = { maxZoom: 5 }
@@ -223,13 +215,13 @@ function createLayer(cov, opts) {
   
   if (cov.coverages) {
     if (isVerticalProfile(cov)) {
-      layer.bindPopupEach(coverage => new C.ProfilePlot(coverage))
+      layer.bindPopupEach(coverage => new C.VerticalProfilePlot(coverage))
     } else if (isTimeSeries(cov)) {
       layer.bindPopupEach(coverage => new C.TimeSeriesPlot(coverage))
     }
   } else {
     if (isVerticalProfile(cov)) {
-      layer.bindPopup(new C.ProfilePlot(cov))
+      layer.bindPopup(new C.VerticalProfilePlot(cov))
     } else if (isTimeSeries(cov)) {
       layer.bindPopup(new C.TimeSeriesPlot(cov))
     }
@@ -305,7 +297,8 @@ new FileMenu({
 window.api = {
     map,
     cm: editor.cm,
-    CodeMirror
+    CodeMirror,
+    layers: coverageLayersOnMap
 }
 
 // Wire up coverage value popup
