@@ -2,32 +2,20 @@ import L from 'leaflet'
 import 'leaflet/dist/leaflet.css!'
 import 'leaflet-loading'
 import 'leaflet-loading/src/Control.Loading.css!'
-import 'leaflet-groupedlayercontrol'
-import 'leaflet-groupedlayercontrol/dist/leaflet.groupedlayercontrol.min.css!'
+//import 'leaflet-groupedlayercontrol'
+//import 'leaflet-groupedlayercontrol/dist/leaflet.groupedlayercontrol.min.css!'
 
 import * as CovJSON from 'covjson-reader'
 import * as RestAPI from 'coverage-rest-client'
-import LayerFactory from 'leaflet-coverage'
-import {getLayerClass} from 'leaflet-coverage'
+import * as C from 'leaflet-coverage'
+import * as CovUtils from 'covutils'
 
 import 'c3/c3.css!'
-import Legend from 'leaflet-coverage/controls/Legend.js'
-import TimeAxis from 'leaflet-coverage/controls/TimeAxis.js'
-import VerticalAxis from 'leaflet-coverage/controls/VerticalAxis.js'
-import ProfilePlot from 'leaflet-coverage/popups/VerticalProfilePlot.js'
-import TimeSeriesPlot from 'leaflet-coverage/popups/TimeSeriesPlot.js'
-import ParameterSync from 'leaflet-coverage/layers/ParameterSync.js'
-import {COVJSON_VERTICALPROFILE, COVJSON_POINTSERIES, COVJSON_POLYGONSERIES} from 'leaflet-coverage/util/constants.js'
-
-import {isDomain} from 'covutils/lib/validate.js'
-import {fromDomain} from 'covutils/lib/coverage/create.js'
 
 import CodeMirror from 'codemirror'
 
 import FileMenu from './FileMenu.js'
 import Editor from './Editor.js'
-
-import DraggableValuePopup from 'leaflet-coverage/popups/DraggableValuePopup.js'
 
 import './style.css!'
 
@@ -49,15 +37,14 @@ let baseLayers = {
 }
 baseLayers['OSM'].addTo(map)
 
-let layerControl = L.control.groupedLayers([], [], {collapsed: false}).addTo(map)
-
-let layerFactory = LayerFactory()
+//let layerControl = L.control.groupedLayers([], [], {collapsed: false}).addTo(map)
+let layerControl = L.control.layers([], [], {collapsed: false}).addTo(map)
 
 // We use ParameterSync here so that multiple coverage layers that display the same
 // parameter get synchronized in terms of their palette and extent.
 // It also allows us to display a single legend only.
 // Layers that don't have a single parameter get ignored automatically.
-let paramSync = new ParameterSync({
+let paramSync = new C.ParameterSync({
   syncProperties: {
     palette: (p1, p2) => p1,
     paletteExtent: (e1, e2) => e1 && e2 ? [Math.min(e1[0], e2[0]), Math.max(e1[1], e2[1])] : null
@@ -67,7 +54,7 @@ let paramSync = new ParameterSync({
     // The sync layer will fire a 'remove' event if all real layers for that parameter were removed.
     let layer = e.syncLayer
     if (layer.palette) {
-      Legend(layer, {
+      C.legend(layer, {
         position: 'bottomright'
       }).addTo(map)
     }
@@ -100,8 +87,8 @@ function loadCov (url, options = {}) {
     .then(cov => RestAPI.wrap(cov, {loader: CovJSON.read}))
     .then(cov => {
       
-    if (isDomain(cov)) {
-      cov = fromDomain(cov)
+    if (CovUtils.isDomain(cov)) {
+      cov = CovUtils.fromDomain(cov)
     }
       
     map.fire('dataload')
@@ -110,7 +97,7 @@ function loadCov (url, options = {}) {
     // add each parameter as a layer
     let firstLayer
     
-    let layerClazz = getLayerClass(cov)
+    let layerClazz = C.dataLayerClass(cov)
     
     if (cov.coverages && !layerClazz) {
       // generic collection
@@ -203,15 +190,15 @@ function zoomToLayers (layers) {
 }
 
 function isVerticalProfile (cov) {
-  return cov.domainType === COVJSON_VERTICALPROFILE
+  return cov.domainType === C.COVJSON_VERTICALPROFILE
 }
 
 function isTimeSeries (cov) {
-  return cov.domainType === COVJSON_POINTSERIES || cov.domainType === COVJSON_POLYGONSERIES
+  return cov.domainType === C.COVJSON_POINTSERIES || cov.domainType === C.COVJSON_POLYGONSERIES
 }
 
 function createLayer(cov, opts) {
-  let layer = layerFactory(cov, opts).on('add', e => {
+  let layer = C.dataLayer(cov, opts).on('add', e => {
     let covLayer = e.target
     console.log('layer added:', covLayer)
             
@@ -223,10 +210,10 @@ function createLayer(cov, opts) {
     
     if (!cov.coverages) {
       if (covLayer.time) {
-        new TimeAxis(covLayer).addTo(map)
+        new C.TimeAxis(covLayer).addTo(map)
       }
       if (covLayer.vertical) {
-        new VerticalAxis(covLayer).addTo(map)
+        new C.VerticalAxis(covLayer).addTo(map)
       }
     }
   }).on('dataLoading', () => map.fire('dataloading'))
@@ -234,15 +221,15 @@ function createLayer(cov, opts) {
   
   if (cov.coverages) {
     if (isVerticalProfile(cov)) {
-      layer.bindPopupEach(coverage => new ProfilePlot(coverage))
+      layer.bindPopupEach(coverage => new C.ProfilePlot(coverage))
     } else if (isTimeSeries(cov)) {
-      layer.bindPopupEach(coverage => new TimeSeriesPlot(coverage))
+      layer.bindPopupEach(coverage => new C.TimeSeriesPlot(coverage))
     }
   } else {
     if (isVerticalProfile(cov)) {
-      layer.bindPopup(new ProfilePlot(cov))
+      layer.bindPopup(new C.ProfilePlot(cov))
     } else if (isTimeSeries(cov)) {
-      layer.bindPopup(new TimeSeriesPlot(cov))
+      layer.bindPopup(new C.TimeSeriesPlot(cov))
     }
   }
     
@@ -322,7 +309,7 @@ window.api = {
 // Wire up coverage value popup
 let valuePopup
 function openValuePopup (latlng) {
-  valuePopup = new DraggableValuePopup({
+  valuePopup = new C.DraggableValuePopup({
     className: 'leaflet-popup-draggable',
     layers: [...coverageLayersOnMap]
   }).setLatLng(latlng)

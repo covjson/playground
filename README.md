@@ -8,8 +8,8 @@ http://covjson.org/playground/
 $ npm install -g jspm-cli // only once on your system
 $ npm install
 Configuration file config.js doesn't exist, create it? [yes]: yes
-$ npm run serve
-Starting up http-server, serving ./ on: http://0.0.0.0:8081
+$ npm start
+Starting up http-server, serving ./ on: http://0.0.0.0:8086
 ```
 
 Now go to <http://localhost:8081>.
