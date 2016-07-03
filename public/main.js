@@ -8,6 +8,7 @@ import './leaflet-singleclick.js'
 import * as CovJSON from 'covjson-reader'
 import * as RestAPI from 'coverage-rest-client'
 import * as C from 'leaflet-coverage'
+import 'leaflet-coverage/leaflet-coverage.css!'
 import * as CovUtils from 'covutils'
 
 import 'c3/c3.css!'
