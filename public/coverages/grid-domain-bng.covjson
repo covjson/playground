@@ -1,0 +1,15 @@
+{
+  "type" : "Domain",
+  "domainType": "Grid",
+  "axes": {
+    "x" : { "start": 185106, "stop": 657784, "num": 100 },
+    "y" : { "start": 15407, "stop": 619322, "num": 100 }
+  },
+  "referencing": [{
+    "components": ["x", "y"],
+    "system": {
+      "type": "ProjectedCRS",
+      "id": "http://www.opengis.net/def/crs/EPSG/0/27700"
+    }  
+  }]  
+}

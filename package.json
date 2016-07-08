@@ -21,7 +21,7 @@
       "codemirror": "npm:codemirror@^5.7.0",
       "coverage-rest-client": "github:Reading-eScience-Centre/coverage-rest-client@master",
       "covjson-reader": "npm:covjson-reader@^0.14.0",
-      "covutils": "npm:covutils@^0.4.3",
+      "covutils": "npm:covutils@^0.5.1",
       "css": "github:systemjs/plugin-css@^0.1.13",
       "fetch": "npm:whatwg-fetch@^0.11.0",
       "font-awesome": "npm:font-awesome@4.5.0",
@@ -34,7 +34,9 @@
       "babel": "npm:babel-core@^5.8.24",
       "babel-runtime": "npm:babel-runtime@^5.8.24",
       "clean-css": "npm:clean-css@3.4.8",
-      "core-js": "npm:core-js@^1.1.4"
+      "core-js": "npm:core-js@^1.1.4",
+      "traceur": "github:jmcriffey/bower-traceur@0.0.93",
+      "traceur-runtime": "github:jmcriffey/bower-traceur-runtime@0.0.93"
     },
     "overrides": {
       "github:josdejong/jsonlint@master": {

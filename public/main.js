@@ -267,6 +267,9 @@ let examples = [{
 }, {
   title: 'Grid (Domain)',
   url: 'coverages/grid-domain.covjson'
+}, {
+  title: 'Grid BNG (Domain)',
+  url: 'coverages/grid-domain-bng.covjson'
 }]
 
 let editor = new Editor({
@@ -293,7 +296,10 @@ window.addEventListener("hashchange", loadFromHash, false)
 new FileMenu({
   container: document.getElementsByClassName('file-bar')[0],
   examples
-}).on('requestload', ({url}) => editor.load(url))
+}).on('requestload', ({url}) => {
+  closeValuePopup()
+  editor.load(url)
+})
 
 window.api = {
     map,
@@ -310,6 +316,12 @@ function openValuePopup (latlng) {
     layers: [...coverageLayersOnMap]
   }).setLatLng(latlng)
     .openOn(map)
+}
+
+function closeValuePopup () {
+  if (valuePopup && map.hasLayer(valuePopup)) {
+    map.closePopup(valuePopup)
+  }
 }
 
 map.on('singleclick', e => openValuePopup(e.latlng))
