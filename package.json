@@ -23,7 +23,7 @@
       "covjson-reader": "npm:covjson-reader@^0.14.0",
       "covutils": "npm:covutils@^0.5.1",
       "css": "github:systemjs/plugin-css@^0.1.13",
-      "fetch": "npm:whatwg-fetch@^0.11.0",
+      "fetch": "npm:whatwg-fetch@^1.0.0",
       "font-awesome": "npm:font-awesome@4.5.0",
       "jsonlint": "github:josdejong/jsonlint@master",
       "leaflet": "npm:leaflet@^0.7.7",
