@@ -1,6 +1,6 @@
 # CoverageJSON Playground
 
-http://covjson.org/playground/
+https://covjson.org/playground/
 
 ## Development setup
 
