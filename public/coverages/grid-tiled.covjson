@@ -40,13 +40,13 @@
       "shape": [2, 5, 10],
       "tileSets": [{
         "tileShape": [null, 2, 3],
-        "urlTemplate": "http://covjson.org/playground/coverages/grid-tiled/a/{y}-{x}.covjson"
+        "urlTemplate": "https://covjson.org/playground/coverages/grid-tiled/a/{y}-{x}.covjson"
       }, {
         "tileShape": [1, null, null],
-        "urlTemplate": "http://covjson.org/playground/coverages/grid-tiled/b/{t}.covjson"
+        "urlTemplate": "https://covjson.org/playground/coverages/grid-tiled/b/{t}.covjson"
       }, {
         "tileShape": [null, null, null],
-        "urlTemplate": "http://covjson.org/playground/coverages/grid-tiled/c/all.covjson"
+        "urlTemplate": "https://covjson.org/playground/coverages/grid-tiled/c/all.covjson"
       }]
     }
   }
