@@ -213,6 +213,9 @@ function createLayer(cov, opts) {
     }
   }).on('dataLoading', () => map.fire('dataloading'))
     .on('dataLoad', () => map.fire('dataload'))
+  layer.on('axisChange', () => {
+    layer.paletteExtent = 'subset'
+  })
   
   if (cov.coverages) {
     if (isVerticalProfile(cov)) {
