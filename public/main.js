@@ -1,3 +1,8 @@
+import 'core-js/fn/string/starts-with.js'
+import 'core-js/fn/string/ends-with.js'
+import 'core-js/fn/array/find.js'
+import 'core-js/es6/promise.js'
+
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css!'
 import 'leaflet-loading'

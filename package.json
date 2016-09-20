@@ -22,6 +22,7 @@
       "coverage-rest-client": "github:Reading-eScience-Centre/coverage-rest-client@master",
       "covjson-reader": "npm:covjson-reader@^0.16.0",
       "covutils": "npm:covutils@^0.6.0",
+      "core-js": "npm:core-js@^1.1.4",
       "css": "github:systemjs/plugin-css@^0.1.13",
       "fetch": "npm:whatwg-fetch@^1.0.0",
       "font-awesome": "npm:font-awesome@4.5.0",
