@@ -124,7 +124,8 @@ function loadCov (url, options = {}) {
           // TODO extend layer group class in leaflet-coverage (like PointCollection) to provide single 'add' event
           let addCount = 0
           for (let l of layers) {
-            l.on('add', () => {
+            l.on('dataLoad', e => {
+              if (!e.init) return
               coverageLayersOnMap.add(l)
               ++addCount
               if (addCount === layers.length) {
@@ -148,7 +149,8 @@ function loadCov (url, options = {}) {
         layerControl.addOverlay(layer, key)
         if (!firstLayer) {
           firstLayer = layer
-          layer.on('add', () => {
+          layer.on('dataLoad', e => {
+            if (!e.init) return
             zoomToLayers([layer])
             if (!cov.coverages) {
               if (isVerticalProfile(cov) || isTimeSeries(cov)) {
@@ -157,7 +159,8 @@ function loadCov (url, options = {}) {
             }
           })
         }
-        layer.on('add', () => {
+        layer.on('dataLoad', e => {
+          if (!e.init) return
           coverageLayersOnMap.add(layer)
           map.fire('covlayeradd', {layer})
         }).on('remove', () => {
@@ -198,7 +201,10 @@ function isTimeSeries (cov) {
 }
 
 function createLayer(cov, opts) {
-  let layer = C.dataLayer(cov, opts).on('add', e => {
+  let layer = C.dataLayer(cov, opts).on('dataLoad', e => {
+    map.fire('dataload')
+    if (!e.init) return
+
     let covLayer = e.target
     console.log('layer added:', covLayer)
             
@@ -217,7 +223,6 @@ function createLayer(cov, opts) {
       }
     }
   }).on('dataLoading', () => map.fire('dataloading'))
-    .on('dataLoad', () => map.fire('dataload'))
   layer.on('axisChange', () => {
     layer.paletteExtent = 'subset'
   })

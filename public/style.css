@@ -205,3 +205,12 @@ body.fullscreen .playground .file-bar div.item a.parent {
   white-space: nowrap;
   overflow: hidden;
 }
+
+/*
+Leaflet has a rule '.leaflet-map-pane svg' which puts any svg into z-index 200.
+The tooltip of c3 is placed in z-index 10, so it would be behind the svg.
+The following fixes that.
+*/
+.c3-tooltip-container {
+    z-index: 300;
+}
