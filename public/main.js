@@ -124,8 +124,7 @@ function loadCov (url, options = {}) {
           // TODO extend layer group class in leaflet-coverage (like PointCollection) to provide single 'add' event
           let addCount = 0
           for (let l of layers) {
-            l.on('dataLoad', e => {
-              if (!e.init) return
+            l.on('afterAdd', () => {
               coverageLayersOnMap.add(l)
               ++addCount
               if (addCount === layers.length) {
@@ -149,8 +148,7 @@ function loadCov (url, options = {}) {
         layerControl.addOverlay(layer, key)
         if (!firstLayer) {
           firstLayer = layer
-          layer.on('dataLoad', e => {
-            if (!e.init) return
+          layer.on('afterAdd', () => {
             zoomToLayers([layer])
             if (!cov.coverages) {
               if (isVerticalProfile(cov) || isTimeSeries(cov)) {
@@ -159,8 +157,7 @@ function loadCov (url, options = {}) {
             }
           })
         }
-        layer.on('dataLoad', e => {
-          if (!e.init) return
+        layer.on('afterAdd', () => {
           coverageLayersOnMap.add(layer)
           map.fire('covlayeradd', {layer})
         }).on('remove', () => {
@@ -201,10 +198,7 @@ function isTimeSeries (cov) {
 }
 
 function createLayer(cov, opts) {
-  let layer = C.dataLayer(cov, opts).on('dataLoad', e => {
-    map.fire('dataload')
-    if (!e.init) return
-
+  let layer = C.dataLayer(cov, opts).on('afterAdd', e => {
     let covLayer = e.target
     console.log('layer added:', covLayer)
             
@@ -222,7 +216,8 @@ function createLayer(cov, opts) {
         new C.VerticalAxis(covLayer).addTo(map)
       }
     }
-  }).on('dataLoading', () => map.fire('dataloading'))
+  }).on('dataLoad', () => map.fire('dataload'))
+    .on('dataLoading', () => map.fire('dataloading'))
   layer.on('axisChange', () => {
     layer.paletteExtent = 'subset'
   })
@@ -244,45 +239,46 @@ function createLayer(cov, opts) {
   return layer
 }
 
+let relUrl = basename => `coverages/${basename}.covjson`
 let examples = [{
   title: 'Grid',
-  url: 'coverages/grid.covjson'
+  url: relUrl('grid')
 }, {
   title: 'Grid (Categorical)',
-  url: 'coverages/grid-categorical.covjson'
+  url: relUrl('grid-categorical')
 }, {
   title: 'Grid (Tiled)',
-  url: 'coverages/grid-tiled.covjson'
+  url: relUrl('grid-tiled')
 }, {
   title: 'Trajectory',
-  url: 'coverages/trajectory.covjson'
+  url: relUrl('trajectory')
 }, {
   title: 'Profile',
-  url: 'coverages/profile.covjson'
+  url: relUrl('profile')
 }, {
   title: 'PointSeries',
-  url: 'coverages/pointseries.covjson'
+  url: relUrl('pointseries')
 }, {
   title: 'Point',
-  url: 'coverages/point.covjson'
+  url: relUrl('point')
 }, {
   title: 'Point Collection',
-  url: 'coverages/point-collection.covjson'
+  url: relUrl('point-collection')
 }, {
   title: 'Profile Collection',
-  url: 'coverages/profile-collection.covjson'
+  url: relUrl('profile-collection')
 }, {
   title: 'MultiPolygon',
-  url: 'coverages/multipolygon.covjson'
+  url: relUrl('multipolygon')
 }, {
   title: 'PolygonSeries',
-  url: 'coverages/polygonseries.covjson'
+  url: relUrl('polygonseries')
 }, {
   title: 'Grid (Domain)',
-  url: 'coverages/grid-domain.covjson'
+  url: relUrl('grid-domain')
 }, {
   title: 'Grid BNG (Domain)',
-  url: 'coverages/grid-domain-bng.covjson'
+  url: relUrl('grid-domain-bng')
 }]
 
 let editor = new Editor({
