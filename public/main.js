@@ -322,41 +322,31 @@ window.api = {
 }
 
 // Wire up coverage value popup
-let valuePopup
-function openValuePopup (latlng) {
-  valuePopup = new C.DraggableValuePopup({
-    className: 'leaflet-popup-draggable',
-    layers: [...coverageLayersOnMap]
-  }).setLatLng(latlng)
-    .openOn(map)
-}
+let valuePopup = new C.DraggableValuePopup({
+  className: 'leaflet-popup-draggable',
+  layers: [...coverageLayersOnMap]
+})
 
 function closeValuePopup () {
-  if (valuePopup && map.hasLayer(valuePopup)) {
+  if (map.hasLayer(valuePopup)) {
     map.closePopup(valuePopup)
   }
 }
 
-map.on('singleclick', e => openValuePopup(e.latlng))
-map.on('covlayercreate', createEvent => {
-  let layer = createEvent.layer
-  // TODO can we make this more clever?
-  if (layer instanceof C.VerticalProfileCollection) {
-    // don't show a value popup as we already show a plot popup
-    return
+// click event needed for Grid layer (can't use bindPopup there)
+map.on('singleclick', e => {
+  valuePopup.setLatLng(e.latlng).openOn(map)
+})
+map.on('covlayercreate', e => {
+  // some layers already have a plot popup bound to it, ignore those
+  if (!e.layer.getPopup()) {
+    e.layer.bindPopup(valuePopup)
   }
-  layer.on('click', clickEvent => {
-    openValuePopup(clickEvent.latlng)
-  })  
 })
 map.on('covlayeradd', e => {
-  if (valuePopup) {
-    valuePopup.addCoverageLayer(e.layer)
-  }
+  valuePopup.addCoverageLayer(e.layer)
 })
 map.on('covlayerremove', e => {
-  if (valuePopup) {
-    valuePopup.removeCoverageLayer(e.layer)
-  }
+  valuePopup.removeCoverageLayer(e.layer)
 })
 
