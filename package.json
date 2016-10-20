@@ -28,7 +28,7 @@
       "font-awesome": "npm:font-awesome@4.5.0",
       "jsonlint": "github:josdejong/jsonlint@master",
       "leaflet": "npm:leaflet@^1.0.1",
-      "leaflet-coverage": "github:Reading-eScience-Centre/leaflet-coverage@leaflet-1.0",
+      "leaflet-coverage": "npm:leaflet-coverage@^0.7.0",
       "leaflet-loading": "github:ebrelsford/Leaflet.loading@^0.1.16"
     },
     "devDependencies": {
