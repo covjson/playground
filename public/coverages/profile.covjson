@@ -62,7 +62,7 @@
     "POTM": {
       "type" : "Parameter",
       "description" : {
-      	"en": "The potential temperature, in degrees celcius, of the sea water"
+      	"en": "The potential temperature, in degrees celsius, of the sea water"
       },
       "unit" : {
         "label": {
