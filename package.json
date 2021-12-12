@@ -2,47 +2,28 @@
   "private": true,
   "license": "BSD-3-Clause",
   "scripts": {
-    "start": "http-server -p 8086 -c0",
-    "postinstall": "jspm install --yes",
-    "build": "npm run build-src && npm run build-min",
-    "build-src": "jspm bundle-sfx main bundle.src.js --skip-source-maps",
-    "build-min": "jspm bundle-sfx main bundle.min.js --skip-source-maps --minify"
+    "build-standalone": "webpack --mode production --env type=standalone --progress",
+    "build-embeddable": "webpack --mode production --env type=embeddable --progress",
+    "dev": "webpack serve --mode development --env type=standalone"
+  },
+  "dependencies": {
+    "c3": "^0.7.20",
+    "covjson-reader": "^0.16.0",
+    "covutils": "^0.6.0",
+    "font-awesome": "4.5.0",
+    "leaflet": "^1.7.1",
+    "leaflet-coverage": "^0.8.0",
+    "leaflet-loading": "^0.1.24",
+    "monaco-editor": "^0.31.0"
   },
   "devDependencies": {
-    "http-server": "^0.8.0",
-    "jspm": "^0.16.21"
-  },
-  "jspm": {
-    "directories": {
-      "baseURL": "public"
-    },
-    "dependencies": {
-      "c3": "npm:c3@^0.4.11",
-      "codemirror": "npm:codemirror@^5.7.0",
-      "core-js": "npm:core-js@^1.1.4",
-      "coverage-rest-client": "github:Reading-eScience-Centre/coverage-rest-client@master",
-      "covjson-reader": "npm:covjson-reader@^0.16.0",
-      "covutils": "npm:covutils@^0.6.0",
-      "css": "github:systemjs/plugin-css@^0.1.13",
-      "fetch": "npm:whatwg-fetch@^1.0.0",
-      "font-awesome": "npm:font-awesome@4.5.0",
-      "jsonlint": "github:josdejong/jsonlint@master",
-      "leaflet": "npm:leaflet@^1.0.1",
-      "leaflet-coverage": "npm:leaflet-coverage@^0.7.1",
-      "leaflet-loading": "github:ebrelsford/Leaflet.loading@^0.1.16"
-    },
-    "devDependencies": {
-      "babel": "npm:babel-core@^5.8.24",
-      "babel-runtime": "npm:babel-runtime@^5.8.24",
-      "clean-css": "npm:clean-css@3.4.8",
-      "core-js": "npm:core-js@^1.1.4",
-      "traceur": "github:jmcriffey/bower-traceur@0.0.93",
-      "traceur-runtime": "github:jmcriffey/bower-traceur-runtime@0.0.93"
-    },
-    "overrides": {
-      "github:josdejong/jsonlint@master": {
-        "registry": "npm"
-      }
-    }
+    "copy-webpack-plugin": "^10.1.0",
+    "css-loader": "^6.5.1",
+    "monaco-editor-webpack-plugin": "^7.0.0",
+    "style-loader": "^3.3.1",
+    "terser-webpack-plugin": "^5.2.5",
+    "webpack": "^5.64.1",
+    "webpack-cli": "^4.9.1",
+    "webpack-dev-server": "^4.6.0"
   }
 }

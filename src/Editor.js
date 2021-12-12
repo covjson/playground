@@ -1,18 +1,9 @@
-import 'fetch'
 import L from 'leaflet'
+import * as monaco from 'monaco-editor'
 
-import 'font-awesome/css/font-awesome.css!'
+import 'font-awesome/css/font-awesome.css'
 
-import CodeMirror from 'codemirror'
-import 'codemirror/mode/javascript/javascript.js'
-import 'codemirror/lib/codemirror.css!'
-import 'codemirror/theme/eclipse.css!'
-
-import 'codemirror/addon/lint/lint.js'
-import 'codemirror/addon/lint/lint.css!'
-import jsonlint from 'jsonlint'
-import 'codemirror/addon/lint/json-lint.js'
-window.jsonlint = jsonlint.parser
+import CovJSONSchema from './covjson.schema.json'
 
 let TEMPLATES = {
   MENU: `
@@ -24,14 +15,13 @@ let TEMPLATES = {
   HELP: `Help text...`
 }
 
-class Editor extends L.Class {
+export default class Editor extends L.Class {
   
   constructor (options) {
     super()
     this.container = options.container
     
     this._globalErrors = []
-    this._wrapLinter()
     
     this._createMenu()
     this._createJSONEditor()
@@ -48,16 +38,15 @@ class Editor extends L.Class {
     let jsonButton = document.getElementById('json-pane-button')
     jsonButton.addEventListener('click', () => {
       this.helpPane.style.display = 'none'
-      this.cmPane.style.display = 'block'
+      this.monacoPane.style.display = 'block'
       jsonButton.className = 'active'
       helpButton.className = ''
-      this.cm.refresh()
     })
     
     let helpButton = document.getElementById('help-pane-button')
     helpButton.addEventListener('click', () => {
       this.helpPane.style.display = 'block'
-      this.cmPane.style.display = 'none'
+      this.monacoPane.style.display = 'none'
       jsonButton.className = ''
       helpButton.className = 'active'
     })
@@ -66,7 +55,6 @@ class Editor extends L.Class {
     collapseButton.addEventListener('click', () => {
       document.body.className = document.body.className === 'fullscreen' ? '' : 'fullscreen'
       this.fire('resize')
-      this.cm.refresh()
     })
   }
   
@@ -84,21 +72,37 @@ class Editor extends L.Class {
     let el = document.createElement('div')
     el.className = 'pane'
     this.container.appendChild(el)
-    this.cmPane = el
-        
-    let cm = CodeMirror(el,{
-      lineNumbers: true,
-      matchBrackets: true,
-      theme: 'eclipse',
-      
-      mode: 'application/json',
-      gutters: ['CodeMirror-lint-markers'],
-      lint: true
+    this.monacoPane = el
+
+    // a made up unique URI for our model
+    const modelUri = monaco.Uri.parse('a://b/foo.json')
+
+    const model = monaco.editor.createModel('', 'json', modelUri)
+
+    monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
+      validate: true,
+      schemaValidation: 'error',
+      schemas: [
+        {
+          uri: 'https://covjson.org/schema.json',
+          fileMatch: [modelUri.toString()],
+          schema: JSON.parse(CovJSONSchema)
+        },
+      ]
+    });
+
+    this.monacoEditor = monaco.editor.create(el, {
+      model: model,
+      automaticLayout: true,
+      hover: { above: false },
+      minimap: { enabled: false },
+      hideCursorInOverviewRuler: true,
+      guides: { indentation: false },
+      //fixedOverflowWidgets: true
     })
-    this.cm = cm
-    
-    cm.on('change', () => {
-      let text = cm.getValue()
+
+    this.monacoEditor.onDidChangeModelContent(e => {
+      const text = this.monacoEditor.getValue()
       let obj
       try {
         obj = JSON.parse(text)
@@ -106,7 +110,7 @@ class Editor extends L.Class {
       if (obj) {
         this.fire('change', {json: text, obj: obj})
       }
-    })    
+    })
   }
   
   load (url) {
@@ -122,39 +126,16 @@ class Editor extends L.Class {
   }
   
   set json (val) {
-    this.cm.setValue(val)
+    this.monacoEditor.setValue(val)
   }
   
   addError (msg) {
+    // TODO: add error to monaco editor
     this._globalErrors.push(msg)
   }
   
   clearErrors () {
     this._globalErrors = []
-  }
-  
-  _wrapLinter () {
-    let jsonlinter = CodeMirror.helpers.lint.json
-    
-    let wrapped = text => {
-      let jsonlintResult = jsonlinter(text)
-      if (jsonlintResult.length > 0) {
-        return jsonlintResult
-      } else {
-        if (this._globalErrors.length > 0) {
-          let err = this._globalErrors[0]
-          this.clearErrors()
-          return [{
-            message: err,
-            from: CodeMirror.Pos(0, 0),
-            to: CodeMirror.Pos(0, 0)
-          }]
-        } else {
-          return []
-        }
-      }
-    }
-    CodeMirror.helpers.lint.json = wrapped
   }
 }
 
@@ -189,6 +170,3 @@ function prettifyJSON (json) {
 }
 
 Editor.include(L.Mixin.Events)
-
-//work-around for transpiler bug, otherwise class cannot be referenced above
-export { Editor as default }

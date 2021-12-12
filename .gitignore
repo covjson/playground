@@ -1,4 +1,2 @@
 /node_modules/
-/.project
-/bundle.min.js
-/bundle.src.js
+/dist
