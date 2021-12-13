@@ -1,5 +1,4 @@
 - Load CovJSON schema dynamically from a well-known URL instead of bundling
-- Show external/global errors in editor (see Editor.js:addError)
 - Editor: Completion list has missing/bad background https://github.com/microsoft/monaco-editor/issues/2816
 - Editor: Completion list has wrong text color on hover https://github.com/microsoft/monaco-editor/issues/2822
 - Editor: Hover is shown outside of visible area below editor https://github.com/microsoft/monaco-editor/issues/2819

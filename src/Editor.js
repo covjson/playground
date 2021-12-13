@@ -20,9 +20,7 @@ export default class Editor extends L.Class {
   constructor (options) {
     super()
     this.container = options.container
-    
-    this._globalErrors = []
-    
+        
     this._createMenu()
     this._createJSONEditor()
     this._createHelpPane()
@@ -77,7 +75,7 @@ export default class Editor extends L.Class {
     // a made up unique URI for our model
     const modelUri = monaco.Uri.parse('a://b/foo.json')
 
-    const model = monaco.editor.createModel('', 'json', modelUri)
+    const model = monaco.editor.createModel('{}', 'json', modelUri)
 
     monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
       validate: true,
@@ -103,70 +101,15 @@ export default class Editor extends L.Class {
 
     this.monacoEditor.onDidChangeModelContent(e => {
       const text = this.monacoEditor.getValue()
-      let obj
-      try {
-        obj = JSON.parse(text)
-      } catch (e) {}
-      if (obj) {
-        this.fire('change', {json: text, obj: obj})
-      }
+      this.fire('change', {text})
     })
-  }
-  
-  load (url) {
-    fetch(url)
-      .then(checkStatus)
-      .then(response => response.text())
-      .then(prettifyJSON)
-      .then(json => {
-        this.json = json
-      }).catch(e => {
-        console.log(e)
-      })
+
+    window.monacoEditor = this.monacoEditor
   }
   
   set json (val) {
     this.monacoEditor.setValue(val)
   }
-  
-  addError (msg) {
-    // TODO: add error to monaco editor
-    this._globalErrors.push(msg)
-  }
-  
-  clearErrors () {
-    this._globalErrors = []
-  }
-}
-
-function checkStatus (response) {
-  if (response.status >= 200 && response.status < 300) {
-    return response
-  } else {
-    var error = new Error(response.statusText)
-    error.response = response
-    throw error
-  }
-}
-
-/**
- * Indents the JSON if it is all in a single line.
- */
-function prettifyJSON (json) {
-  let maxLength = 100*1024 // 100 KiB
-  let lineCount = json.split(/\r\n|\r|\n/).length
-  if (lineCount > 2 || json.length > maxLength) {
-    // either already prettyprinted or too big
-    return json
-  }
-  let obj
-  try {
-    obj = JSON.parse(json)
-  } catch (e) {
-    // syntax error, don't prettyprint
-    return json
-  }
-  return JSON.stringify(obj, null, 2)
 }
 
 Editor.include(L.Mixin.Events)
