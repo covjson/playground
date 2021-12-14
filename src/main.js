@@ -81,7 +81,10 @@ function removeLayers () {
   layersInControl = new Set()
 }
 
+let editor
+
 function displayCovJSON(obj, options = {}) {
+  editor.clearError()
   removeLayers()
     
   map.fire('dataloading')
@@ -172,7 +175,7 @@ function displayCovJSON(obj, options = {}) {
   }).catch(e => {
     map.fire('dataload')
     console.log(e)
-    window.alert(e.message)
+    editor.setError(e.message)
   })
 }
 
@@ -280,7 +283,7 @@ let examples = [{
   url: relUrl('grid-domain-bng')
 }]
 
-let editor = new Editor({
+editor = new Editor({
   container: playgroundEl.querySelector('.right')
 }).on('change', e => {
   let obj

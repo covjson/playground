@@ -110,6 +110,26 @@ export default class Editor extends L.Class {
   set json (val) {
     this.monacoEditor.setValue(val)
   }
+
+  setError(msg) {
+    this._setMonacoMarkers([msg])
+  }
+
+  clearError() {
+    this._setMonacoMarkers([])
+  }
+
+  _setMonacoMarkers(msgs) {
+    monaco.editor.setModelMarkers(
+      this.monacoEditor.getModel(), 'custom', msgs.map(msg => ({
+        severity: monaco.MarkerSeverity.Error,
+        message: msg,
+        startLineNumber: 1,
+        startColumn: 1,
+        endLineNumber: 1,
+        endColumn: 1
+      })))
+  }
 }
 
 Editor.include(L.Mixin.Events)
