@@ -106,7 +106,7 @@ function displayCovJSON(obj, options = {}) {
     if (cov.coverages && !layerClazz) {
       // generic collection
       if (!cov.parameters) {
-        throw new Error('Only coverage collections with a "parameters" property are supported')
+        throw new Error('Playground: only coverage collections with a "parameters" property are supported')
       }
             
       for (let key of cov.parameters.keys()) {        
@@ -167,7 +167,7 @@ function displayCovJSON(obj, options = {}) {
         })
       }
     } else {
-      throw new Error('unsupported type')
+      throw new Error('Playground: unsupported or missing domain type')
     }
     if (options.display && firstLayer) {
       map.addLayer(firstLayer)
