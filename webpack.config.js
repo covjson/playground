@@ -1,6 +1,8 @@
 const webpack = require('webpack');
 const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
 const CopyPlugin = require("copy-webpack-plugin");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 const path = require('path');
 
 module.exports = env => ({
@@ -14,7 +16,7 @@ module.exports = env => ({
 		rules: [
 			{
 				test: /\.css$/,
-				use: ['style-loader', 'css-loader']
+				use: [MiniCssExtractPlugin.loader, 'css-loader']
 			},
 			{
 				test: /\.ttf$/,
@@ -26,9 +28,19 @@ module.exports = env => ({
 			}
 		]
 	},
+	optimization: {
+		minimizer: [
+			// `...` syntax to extend existing minimizers
+			`...`,
+			new CssMinimizerPlugin(),
+		],
+	},
 	plugins: [
 		new webpack.optimize.LimitChunkCountPlugin({
 			maxChunks: 1,
+		}),
+		new MiniCssExtractPlugin({
+			filename: "bundle.css"
 		}),
 		new MonacoWebpackPlugin({
 			languages: ['json']
