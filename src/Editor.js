@@ -73,7 +73,7 @@ export default class Editor extends L.Class {
     this.monacoPane = el
 
     // a made up unique URI for our model
-    const modelUri = monaco.Uri.parse('a://b/foo.json')
+    const modelUri = monaco.Uri.parse('a://b/sample.covjson')
 
     const model = monaco.editor.createModel('{}', 'json', modelUri)
 
