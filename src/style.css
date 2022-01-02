@@ -197,10 +197,3 @@ The following fixes that.
 .playground .c3-tooltip-container {
   z-index: 300;
 }
-
-/* Temporary work-around for
-   https://github.com/microsoft/monaco-editor/issues/2816
-*/
-.monaco-editor {
-  --vscode-editorSuggestWidget-background: #f3f3f3;
-}
