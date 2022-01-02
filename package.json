@@ -14,12 +14,12 @@
     "leaflet": "^1.7.1",
     "leaflet-coverage": "^0.8.0",
     "leaflet-loading": "^0.1.24",
-    "monaco-editor": "^0.31.0"
+    "monaco-editor": "^0.31.1"
   },
   "devDependencies": {
     "copy-webpack-plugin": "^10.1.0",
     "css-loader": "^6.5.1",
-    "monaco-editor-webpack-plugin": "^7.0.0",
+    "monaco-editor-webpack-plugin": "^7.0.1",
     "style-loader": "^3.3.1",
     "terser-webpack-plugin": "^5.2.5",
     "webpack": "^5.64.1",
