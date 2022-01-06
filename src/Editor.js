@@ -82,6 +82,19 @@ export default class Editor extends L.Class {
     this.container.appendChild(el)
     this.monacoPane = el
 
+    monaco.languages.json.jsonDefaults.setModeConfiguration({
+      documentFormattingEdits: false,
+      documentRangeFormattingEdits: false,
+      completionItems: true,
+      hovers: true,
+      documentSymbols: false,
+      tokens: true,
+      colors: true,
+      foldingRanges: true,
+      diagnostics: true,
+      selectionRanges: true
+    })
+
     // a made up unique URI for our model
     const modelUri = monaco.Uri.parse('a://b/sample.covjson')
 
@@ -102,19 +115,17 @@ export default class Editor extends L.Class {
       this.fire('change', {text})
     })
 
-    this.monacoEditor.addAction({
-      id: 'change-json-schema',
-      label: 'Change JSON Schema...',
-      contextMenuGroupId: 'covjson',
-    
-      run: () => {
-        const url = window.prompt('JSON Schema URL:')
-        if (url !== null) {
-          this.loadJsonSchema(url)
-        }
+    monaco.languages.registerDocumentFormattingEditProvider('json', {
+      provideDocumentFormattingEdits(model, options, token) {
+        return [
+          {
+            range: model.getFullModelRange(),
+            text: compactStringify(JSON.parse(model.getValue())),
+          },
+        ]
       }
     })
-
+  
     const loadFromUrlCommandId = this.monacoEditor.addCommand(
       0,
       () => {
@@ -145,6 +156,19 @@ export default class Editor extends L.Class {
         dispose: () => {}
       }),
       resolveCodeLens: (model, codeLens, token) => codeLens
+    })
+
+    this.monacoEditor.addAction({
+      id: 'change-json-schema',
+      label: 'Change JSON Schema...',
+      contextMenuGroupId: 'covjson',
+    
+      run: () => {
+        const url = window.prompt('JSON Schema URL:')
+        if (url !== null) {
+          this.loadJsonSchema(url)
+        }
+      }
     })
 
     window.monacoEditor = this.monacoEditor
