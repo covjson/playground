@@ -1,3 +1,3 @@
-- Load CovJSON schema dynamically from a well-known URL instead of bundling
+- Replace schema URL with final location (config.js)
 - Editor: Completion list rendering partly broken https://github.com/microsoft/monaco-editor/issues/2870
 - Editor: Hover is shown outside of visible area below editor https://github.com/microsoft/monaco-editor/issues/2819

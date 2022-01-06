@@ -3,8 +3,6 @@ import * as monaco from 'monaco-editor'
 
 import 'font-awesome/css/font-awesome.css'
 
-import CovJSONSchema from './covjson.schema.json'
-
 let TEMPLATES = {
   MENU: `
   <button class="collapse-button" title="Collapse"><class class="fa fa-caret-up"></class></button>
@@ -24,6 +22,10 @@ export default class Editor extends L.Class {
     this._createMenu()
     this._createJSONEditor()
     this._createHelpPane()
+
+    if (options.schemaUrl) {
+      this.loadJsonSchema(options.schemaUrl)
+    }
   }
   
   _createMenu () {
@@ -77,18 +79,6 @@ export default class Editor extends L.Class {
 
     const model = monaco.editor.createModel('{}', 'json', modelUri)
 
-    monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
-      validate: true,
-      schemaValidation: 'error',
-      schemas: [
-        {
-          uri: 'https://covjson.org/schema.json',
-          fileMatch: [modelUri.toString()],
-          schema: JSON.parse(CovJSONSchema)
-        },
-      ]
-    });
-
     this.monacoEditor = monaco.editor.create(el, {
       model: model,
       automaticLayout: true,
@@ -102,6 +92,19 @@ export default class Editor extends L.Class {
     this.monacoEditor.onDidChangeModelContent(e => {
       const text = this.monacoEditor.getValue()
       this.fire('change', {text})
+    })
+
+    this.monacoEditor.addAction({
+      id: 'change-json-schema',
+      label: 'Change JSON Schema...',
+      contextMenuGroupId: 'covjson',
+    
+      run: () => {
+        const url = window.prompt('JSON Schema URL:')
+        if (url !== null) {
+          this.loadJsonSchema(url)
+        }
+      }
     })
 
     window.monacoEditor = this.monacoEditor
@@ -130,6 +133,37 @@ export default class Editor extends L.Class {
         endColumn: 1
       })))
   }
+
+  loadJsonSchema(url) {
+    fetch(url).then(response => {
+      if (!response.ok) {
+        const reason = `${response.status} ${response.statusText}`
+        throw new Error(reason)
+      }
+      return response.json()
+    }).then(schema => {
+      this.setJsonSchema(schema)
+    }).catch(err => {
+      const msg = `Error loading CovJSON schema: ${err.message}\nURL: ${url}`
+      console.error(err)
+      window.alert(msg)
+    })
+  }
+
+  setJsonSchema(schema) {
+    monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
+      validate: true,
+      schemaValidation: 'error',
+      schemas: [
+        {
+          uri: 'https://dummy/schema.json',
+          fileMatch: ['*'],
+          schema: schema
+        },
+      ]
+    });
+  }
+
 }
 
 Editor.include(L.Mixin.Events)
