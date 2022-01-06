@@ -114,25 +114,15 @@ body.fullscreen .playground .right .top .buttons {
   z-index: 1001;
   position: absolute;
   top: 0;
-  right: 50px;
+  right: 0;
   height: 40px;
   box-sizing: border-box;
   line-height: 40px;
+  white-space: nowrap;
 }
 
 body.fullscreen .playground .file-bar {
   height: 39px;
-}
-
-.playground .file-bar .name {
-  padding: 0 10px;
-  display: inline-block;
-  vertical-align: top;
-  background: #fff;
-}
-
-.playground .file-bar .name .filename {
-  margin-left: 10px;
 }
 
 .playground .file-bar div.item {
@@ -156,12 +146,12 @@ body.fullscreen .playground .file-bar div.item a.parent {
   color: #fff;
 }
 
-.playground .file-bar div.item:hover a.parent, .file-bar div.item:focus a.parent {
+.playground .file-bar div.item:hover a.parent, .playground .file-bar div.item:focus a.parent {
   background: #34495e;
   color: #fff;
 }
 
-.playground .file-bar div.item:hover div.children, .file-bar div.item:focus div.children {
+.playground .file-bar div.item:hover div.children, .playground .file-bar div.item:focus div.children {
   display: block;
 }
 
@@ -169,6 +159,7 @@ body.fullscreen .playground .file-bar div.item a.parent {
   display: none;
   position: absolute;
   margin-top: -1px;
+  right: 0;
 }
 
 .playground div.children a {
