@@ -5,7 +5,7 @@ import 'font-awesome/css/font-awesome.css'
 
 let TEMPLATES = {
   MENU: `
-  <button class="collapse-button" title="Collapse"><class class="fa fa-caret-up"></class></button>
+  <button class="collapse-button" title="Collapse"><span class="fa fa-caret-up"></span></button>
   <div class="buttons">
     <button title="JSON Source" id="json-pane-button" class="active"><span class="fa fa-code"></span><span> JSON</span></button> 
     <button title="Help" id="help-pane-button"><span class="fa fa-question"></span><span> Help</span></button>
@@ -51,9 +51,16 @@ export default class Editor extends L.Class {
       helpButton.className = 'active'
     })
     
-    let collapseButton = el.getElementsByClassName('collapse-button')[0]
+    let collapseButton = el.querySelector('.collapse-button')
     collapseButton.addEventListener('click', () => {
-      document.body.className = document.body.className === 'fullscreen' ? '' : 'fullscreen'
+      const isCollapsed = document.body.className === 'fullscreen'
+      document.body.className = isCollapsed ? '' : 'fullscreen'
+      const icon = collapseButton.querySelector('span')
+      if (isCollapsed) {
+        icon.classList.replace('fa-caret-down', 'fa-caret-up')
+      } else {
+        icon.classList.replace('fa-caret-up', 'fa-caret-down')
+      }
       this.fire('resize')
     })
   }
