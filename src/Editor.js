@@ -1,5 +1,6 @@
 import L from 'leaflet'
 import * as monaco from 'monaco-editor'
+import jsonCompactStringify from 'json-stringify-pretty-compact'
 
 import 'font-awesome/css/font-awesome.css'
 
@@ -114,11 +115,59 @@ export default class Editor extends L.Class {
       }
     })
 
+    const loadFromUrlCommandId = this.monacoEditor.addCommand(
+      0,
+      () => {
+        const url = window.prompt('URL:')
+        if (url !== null) {
+          this.loadFromUrl(url)
+        }
+      },
+      ''
+    );
+
+    monaco.languages.registerCodeLensProvider('json', {
+      provideCodeLenses: (model, token) => ({
+        lenses: [
+          {
+            range: {
+              startLineNumber: 1,
+              startColumn: 1,
+              endLineNumber: 2,
+              endColumn: 1
+            },
+            command: {
+              id: loadFromUrlCommandId,
+              title: 'Load from URL...'
+            }
+          }
+        ],
+        dispose: () => {}
+      }),
+      resolveCodeLens: (model, codeLens, token) => codeLens
+    })
+
     window.monacoEditor = this.monacoEditor
   }
   
   set json (val) {
     this.monacoEditor.setValue(val)
+  }
+
+  async loadFromUrl(url) {
+    let text
+    try {
+      const response = await fetch(url)
+      if (!response.ok) {
+        throw new Error(response.statusText)
+      }
+      text = await response.text()
+    } catch (e) {
+      window.alert('Download error: ' + e.message + '\n\n' + url)
+      return
+    }
+    text = maybePrettifySingleLineJSON(text)
+    this.json = text
   }
 
   setError(msg) {
@@ -151,7 +200,7 @@ export default class Editor extends L.Class {
     }).then(schema => {
       this.setJsonSchema(schema)
     }).catch(err => {
-      const msg = `Error loading CovJSON schema: ${err.message}\nURL: ${url}`
+      const msg = `Error loading JSON schema: ${err.message}\nURL: ${url}`
       console.error(err)
       window.alert(msg)
     })
@@ -170,7 +219,37 @@ export default class Editor extends L.Class {
       ]
     });
   }
-
 }
 
 Editor.include(L.Mixin.Events)
+
+/**
+ * Indents the JSON if it is all in a single line.
+ */
+ function maybePrettifySingleLineJSON(json) {
+  let maxLength = 100*1024 // 100 KiB
+  if (json.length > maxLength) {
+    // too big
+    return json
+  }
+  let lineCount = (json.match(/\n/g) || '').length
+  if (lineCount > 2) {
+    // already prettyprinted
+    return json
+  }
+  let obj
+  try {
+    obj = JSON.parse(json)
+  } catch (e) {
+    // syntax error, don't prettyprint
+    return json
+  }
+  return compactStringify(obj)
+}
+
+function compactStringify(obj) {
+  return jsonCompactStringify(obj, {
+    indent: 2,
+    maxLength: 60
+  })
+}

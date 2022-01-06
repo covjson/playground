@@ -12,6 +12,7 @@
     "covjson-reader": "^0.16.0",
     "covutils": "^0.6.0",
     "font-awesome": "4.5.0",
+    "json-stringify-pretty-compact": "^3.0.0",
     "leaflet": "^1.7.1",
     "leaflet-coverage": "^0.8.0",
     "leaflet-loading": "^0.1.24",

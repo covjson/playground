@@ -255,59 +255,15 @@ editor = new Editor({
   map.invalidateSize()
 })
 
-function checkHttpStatus(response) {
-  if (response.ok) {
-    return response
-  } else {
-    const error = new Error(response.statusText)
-    error.response = response
-    throw error
-  }
-}
-
-/**
- * Indents the JSON if it is all in a single line.
- */
-function maybePrettifyJSON(json) {
-  let maxLength = 100*1024 // 100 KiB
-  let lineCount = json.split(/\r\n|\r|\n/).length
-  if (lineCount > 2 || json.length > maxLength) {
-    // either already prettyprinted or too big
-    return json
-  }
-  let obj
-  try {
-    obj = JSON.parse(json)
-  } catch (e) {
-    // syntax error, don't prettyprint
-    return json
-  }
-  return JSON.stringify(obj, null, 2)
-}
-
-async function loadFromUrl(url) {
-  let text
-  try {
-    const response = await fetch(url)
-    checkHttpStatus(response)
-    text = await response.text()
-  } catch (e) {
-    window.alert('Download error: ' + e.message + '\n\n' + url)
-    return
-  }
-  text = maybePrettifyJSON(text)
-  editor.json = text
-}
-
 function loadFromHash () {
   let url = window.location.hash.substring(1)
-  loadFromUrl(url)
+  editor.loadFromUrl(url)
 }
 
 if (window.location.hash) {
   loadFromHash()
 } else {
-  loadFromUrl(config.examples[0].url)
+  editor.loadFromUrl(config.examples[0].url)
 }
 
 window.addEventListener("hashchange", loadFromHash, false)
@@ -317,7 +273,7 @@ new FileMenu({
   examples: config.examples
 }).on('requestload', ({url}) => {
   closeValuePopup()
-  loadFromUrl(url)
+  editor.loadFromUrl(url)
 })
 
 window.api = {
