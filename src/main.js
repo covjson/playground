@@ -218,6 +218,7 @@ function createLayer(cov, opts) {
     }
   }).on('dataLoad', () => map.fire('dataload'))
     .on('dataLoading', () => map.fire('dataloading'))
+    .on('error', e => map.fire('error', { error: e.error }))
   layer.on('axisChange', () => {
     layer.paletteExtent = 'subset'
   })
@@ -310,3 +311,8 @@ map.on('covlayerremove', e => {
   valuePopup.removeCoverageLayer(e.layer)
 })
 
+map.on('error', e => {
+  if (e.error?.message) {
+    editor.setError(e.error.message)
+  }
+})
