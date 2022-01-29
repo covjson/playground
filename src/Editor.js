@@ -9,6 +9,8 @@ import 'codemirror/lib/codemirror.css'
 import 'codemirror/theme/eclipse.css'
 import 'codemirror/addon/lint/lint.js'
 import 'codemirror/addon/lint/lint.css'
+import 'codemirror/addon/scroll/scrollpastend.js'
+import 'codemirror/addon/edit/matchbrackets.js'
 
 import jsonlint from 'jsonlint-mod'
 import Ajv from 'ajv'
@@ -100,13 +102,11 @@ export default class Editor extends L.Class {
     let cm = CodeMirror(el,{
       lineNumbers: true,
       matchBrackets: true,
+      scrollPastEnd: true,
       theme: 'eclipse',
-      
       mode: 'application/json',
       gutters: ['CodeMirror-lint-markers'],
-      lint: {
-        getAnnotations: this._getAnnotations.bind(this)
-      }
+      lint: this._getAnnotations.bind(this),
     })
     this.cm = cm
     
