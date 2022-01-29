@@ -1,8 +1,18 @@
 import L from 'leaflet'
-import * as monaco from 'monaco-editor'
 import jsonCompactStringify from 'json-stringify-pretty-compact'
 
 import 'font-awesome/css/font-awesome.css'
+
+import CodeMirror from 'codemirror'
+import 'codemirror/mode/javascript/javascript.js'
+import 'codemirror/lib/codemirror.css'
+import 'codemirror/theme/eclipse.css'
+import 'codemirror/addon/lint/lint.js'
+import 'codemirror/addon/lint/lint.css'
+
+import jsonlint from 'jsonlint-mod'
+import Ajv from 'ajv'
+import jsonSourceMap from 'json-source-map'
 
 let TEMPLATES = {
   MENU: `
@@ -20,6 +30,8 @@ export default class Editor extends L.Class {
     super()
     this.container = options.container
         
+    this._globalErrors = []
+
     this._createMenu()
     this._createJSONEditor()
     this._createHelpPane()
@@ -39,15 +51,16 @@ export default class Editor extends L.Class {
     let jsonButton = document.getElementById('json-pane-button')
     jsonButton.addEventListener('click', () => {
       this.helpPane.style.display = 'none'
-      this.monacoPane.style.display = 'block'
+      this.cmPane.style.display = 'block'
       jsonButton.className = 'active'
       helpButton.className = ''
+      this.cm.refresh()
     })
     
     let helpButton = document.getElementById('help-pane-button')
     helpButton.addEventListener('click', () => {
       this.helpPane.style.display = 'block'
-      this.monacoPane.style.display = 'none'
+      this.cmPane.style.display = 'none'
       jsonButton.className = ''
       helpButton.className = 'active'
     })
@@ -63,6 +76,7 @@ export default class Editor extends L.Class {
         icon.classList.replace('fa-caret-up', 'fa-caret-down')
       }
       this.fire('resize')
+      this.cm.refresh()
     })
   }
   
@@ -80,104 +94,104 @@ export default class Editor extends L.Class {
     let el = document.createElement('div')
     el.className = 'pane'
     this.container.appendChild(el)
-    this.monacoPane = el
 
-    monaco.languages.json.jsonDefaults.setModeConfiguration({
-      documentFormattingEdits: false,
-      documentRangeFormattingEdits: false,
-      completionItems: true,
-      hovers: true,
-      documentSymbols: false,
-      tokens: true,
-      colors: true,
-      foldingRanges: true,
-      diagnostics: true,
-      selectionRanges: true
-    })
-
-    // a made up unique URI for our model
-    const modelUri = monaco.Uri.parse('a://b/sample.covjson')
-
-    const model = monaco.editor.createModel('{}', 'json', modelUri)
-
-    this.monacoEditor = monaco.editor.create(el, {
-      model: model,
-      automaticLayout: true,
-      hover: { above: false },
-      minimap: { enabled: false },
-      hideCursorInOverviewRuler: true,
-      guides: { indentation: false },
-      //fixedOverflowWidgets: true
-    })
-
-    this.monacoEditor.onDidChangeModelContent(e => {
-      const text = this.monacoEditor.getValue()
-      this.fire('change', {text})
-    })
-
-    monaco.languages.registerDocumentFormattingEditProvider('json', {
-      provideDocumentFormattingEdits(model, options, token) {
-        return [
-          {
-            range: model.getFullModelRange(),
-            text: compactStringify(JSON.parse(model.getValue())),
-          },
-        ]
+    this.cmPane = el
+        
+    let cm = CodeMirror(el,{
+      lineNumbers: true,
+      matchBrackets: true,
+      theme: 'eclipse',
+      
+      mode: 'application/json',
+      gutters: ['CodeMirror-lint-markers'],
+      lint: {
+        getAnnotations: this._getAnnotations.bind(this)
       }
     })
-  
-    const loadFromUrlCommandId = this.monacoEditor.addCommand(
-      0,
-      () => {
-        const url = window.prompt('URL:')
-        if (url !== null) {
-          this.loadFromUrl(url)
-        }
-      },
-      ''
-    );
-
-    monaco.languages.registerCodeLensProvider('json', {
-      provideCodeLenses: (model, token) => ({
-        lenses: [
-          {
-            range: {
-              startLineNumber: 1,
-              startColumn: 1,
-              endLineNumber: 2,
-              endColumn: 1
-            },
-            command: {
-              id: loadFromUrlCommandId,
-              title: 'Load from URL...'
-            }
-          }
-        ],
-        dispose: () => {}
-      }),
-      resolveCodeLens: (model, codeLens, token) => codeLens
-    })
-
-    this.monacoEditor.addAction({
-      id: 'change-json-schema',
-      label: 'Change JSON Schema...',
-      contextMenuGroupId: 'covjson',
+    this.cm = cm
     
-      run: () => {
-        const url = window.prompt('JSON Schema URL:')
-        if (url !== null) {
-          this.loadJsonSchema(url)
-        }
+    cm.on('change', () => {
+      let text = cm.getValue()
+      let obj
+      try {
+        obj = JSON.parse(text)
+      } catch (e) {}
+      if (obj) {
+        this.fire('change', {text})
       }
     })
+  }
 
-    window.monacoEditor = this.monacoEditor
+  _getAnnotations(text) {
+    const found = []
+
+    // adapted from codemirror/addon/lint/json-lint.js
+    const jsonlint_ = jsonlint.parser
+    const oldParseError = jsonlint_.parseError
+    jsonlint_.parseError = (str, hash) => {
+      var loc = hash.loc
+      found.push({from: CodeMirror.Pos(loc.first_line - 1, loc.first_column),
+                  to: CodeMirror.Pos(loc.last_line - 1, loc.last_column),
+                  message: str})
+    }
+    try {
+      jsonlint_.parse(text)
+    }
+    catch(e) {}
+    jsonlint_.parseError = oldParseError
+
+    if (found.length) {
+      return found
+    }
+
+    if (this.ajvValidate) {
+      const obj = JSON.parse(text)
+      const valid = this.ajvValidate(obj)
+      if (!valid) {
+        // ajv returns JSON Pointer
+        // json-source-map converts to line/column
+        // https://github.com/ajv-validator/ajv/issues/763
+        const sourceMap = jsonSourceMap.parse(text)
+        for (const error of this.ajvValidate.errors) {
+          let fromLine = 0
+          let toLine = 0
+          let fromCol = 0
+          let toCol = 1
+          if (error.instancePath !== '') {
+            const pointer = sourceMap.pointers[error.instancePath]
+            fromLine = pointer.value.line
+            toLine = pointer.valueEnd.line
+            fromCol = pointer.value.column
+            toCol = pointer.valueEnd.column
+          }
+          const msg = this.ajv.errorsText([error], {dataVar: ''})
+          found.push({
+            message: msg,
+            from: CodeMirror.Pos(fromLine, fromCol),
+            to: CodeMirror.Pos(toLine, toCol),
+          })
+        }
+      }
+    }
+
+    if (this._globalErrors.length) {
+      let err = this._globalErrors[0]
+      this.clearError()
+      found.push({
+        message: err,
+        from: CodeMirror.Pos(0, 0),
+        to: CodeMirror.Pos(0, 0)
+      })
+    }
+
+    return found;
   }
   
   set json (val) {
-    this.monacoEditor.setValue(val)
+    this.cm.setValue(val)
   }
 
+  // TODO expose in UI
   async loadFromUrl(url) {
     let text
     try {
@@ -195,23 +209,11 @@ export default class Editor extends L.Class {
   }
 
   setError(msg) {
-    this._setMonacoMarkers([msg])
+    this._globalErrors = [msg]
   }
 
   clearError() {
-    this._setMonacoMarkers([])
-  }
-
-  _setMonacoMarkers(msgs) {
-    monaco.editor.setModelMarkers(
-      this.monacoEditor.getModel(), 'custom', msgs.map(msg => ({
-        severity: monaco.MarkerSeverity.Error,
-        message: msg,
-        startLineNumber: 1,
-        startColumn: 1,
-        endLineNumber: 1,
-        endColumn: 1
-      })))
+    this._globalErrors = []
   }
 
   loadJsonSchema(url) {
@@ -231,17 +233,10 @@ export default class Editor extends L.Class {
   }
 
   setJsonSchema(schema) {
-    monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
-      validate: true,
-      schemaValidation: 'error',
-      schemas: [
-        {
-          uri: 'https://dummy/schema.json',
-          fileMatch: ['*'],
-          schema: schema
-        },
-      ]
-    });
+    this.ajv = new Ajv({
+      allErrors: false,
+    })
+    this.ajvValidate = this.ajv.compile(schema)
   }
 }
 

@@ -1,5 +1,4 @@
 const webpack = require('webpack');
-const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
 const CopyPlugin = require("copy-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
@@ -22,10 +21,6 @@ module.exports = env => ({
 				test: /\.ttf$/,
 				type: 'asset/resource'
 			},
-			{
-				test: /\.json$/,
-				type: 'asset/source'
-			}
 		]
 	},
 	optimization: {
@@ -41,9 +36,6 @@ module.exports = env => ({
 		}),
 		new MiniCssExtractPlugin({
 			filename: "bundle.css"
-		}),
-		new MonacoWebpackPlugin({
-			languages: ['json']
 		}),
 		new CopyPlugin({
 			patterns: [

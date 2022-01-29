@@ -1,1 +1,0 @@
-This folder contains standalone HTML files with most playground functionality removed. Their purpose is to demonstrate issues related to third-party components like Monaco without requiring to build anything and such that fiddling is easily possible both in JS and CSS. 

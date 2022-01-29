@@ -8,22 +8,24 @@
     "dev": "webpack serve --mode development --env type=standalone"
   },
   "dependencies": {
+    "ajv": "^8.9.0",
     "c3": "^0.7.20",
+    "codemirror": "^5.65.1",
     "covjson-reader": "^0.16.0",
     "covutils": "^0.6.0",
     "font-awesome": "4.5.0",
+    "json-source-map": "^0.6.1",
     "json-stringify-pretty-compact": "^3.0.0",
+    "jsonlint-mod": "^1.7.6",
     "leaflet": "^1.7.1",
     "leaflet-coverage": "^0.8.0",
-    "leaflet-loading": "^0.1.24",
-    "monaco-editor": "^0.31.1"
+    "leaflet-loading": "^0.1.24"
   },
   "devDependencies": {
     "copy-webpack-plugin": "^10.1.0",
     "css-loader": "^6.5.1",
     "css-minimizer-webpack-plugin": "^3.3.1",
     "mini-css-extract-plugin": "^2.4.5",
-    "monaco-editor-webpack-plugin": "^7.0.1",
     "webpack": "^5.64.1",
     "webpack-cli": "^4.9.1",
     "webpack-dev-server": "^4.6.0"

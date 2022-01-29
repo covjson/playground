@@ -61,6 +61,22 @@ body.fullscreen .playground .right .top .buttons {
   overflow: auto;
 }
 
+.playground .right .CodeMirror {
+  position:absolute;
+  bottom:0;
+  right:0;
+  left:0;
+  top:0;
+  height:auto !important;
+  background:#fff;
+  font-family: Consolas, "Courier New", monospace;
+  line-height:1.5em;
+}
+
+.playground .CodeMirror-gutters {
+    background:#fff !important;
+}
+
 .playground button {
   background: #fff;
   font: inherit;
