@@ -41,6 +41,9 @@ export default class Editor extends L.Class {
     if (options.schemaUrl) {
       this.loadJsonSchema(options.schemaUrl)
     }
+    if (options.url) {
+      this.loadFromUrl(options.url)
+    }
   }
   
   _createMenu () {
@@ -216,20 +219,20 @@ export default class Editor extends L.Class {
     this._globalErrors = []
   }
 
-  loadJsonSchema(url) {
-    fetch(url).then(response => {
+  async loadJsonSchema(url) {
+    try {
+      const response = await fetch(url)
       if (!response.ok) {
         const reason = `${response.status} ${response.statusText}`
         throw new Error(reason)
       }
-      return response.json()
-    }).then(schema => {
+      const schema = await response.json()
       this.setJsonSchema(schema)
-    }).catch(err => {
+    } catch (err) {
       const msg = `Error loading JSON schema: ${err.message}\nURL: ${url}`
       console.error(err)
       window.alert(msg)
-    })
+    }
   }
 
   setJsonSchema(schema) {

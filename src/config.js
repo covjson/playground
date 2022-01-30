@@ -6,8 +6,10 @@ export const baseMap = {
     attribution: 'Map data &copy; <a href="http://www.osm.org">OpenStreetMap</a>'
 }
 
-export const schemaUrl = 
-    'https://raw.githubusercontent.com/covjson/playground/letmaik/2021/src/covjson.schema.json'
+// TODO replace with final URL
+// export const schemaUrl = 
+//   'https://covjson.org/schema.json'
+export const schemaUrl = null
 
 const relUrl = basename => `coverages/${basename}.covjson`
 export const examples = [{

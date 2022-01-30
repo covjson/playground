@@ -240,9 +240,28 @@ function createLayer(cov, opts) {
   return layer
 }
 
+function parseLocationHash() {
+  let hash = window.location.hash.substring(1)
+  
+  // handle old style
+  if (hash.startsWith('http')) {
+    return {url: hash}
+  }
+
+  let params = new URLSearchParams(hash)
+  let url = params.get('url')
+  let schema = params.get('schema')
+  return {url, schema}  
+}
+
+const initialHash = parseLocationHash()
+const schemaUrl = initialHash.schema || config.schemaUrl
+const covjsonUrl = initialHash.url || config.examples[0].url
+
 editor = new Editor({
   container: playgroundEl.querySelector('.right'),
-  schemaUrl: config.schemaUrl
+  schemaUrl: schemaUrl,
+  url: covjsonUrl
 }).on('change', e => {
   let obj
   try {
@@ -256,18 +275,19 @@ editor = new Editor({
   map.invalidateSize()
 })
 
-function loadFromHash () {
-  let url = window.location.hash.substring(1)
-  editor.loadFromUrl(url)
+let oldHash = {}
+async function handleLocationHashChange () {
+  const hash = parseLocationHash()
+  if (hash.schema && oldHash.schema != hash.schema) {
+    await editor.loadJsonSchema(hash.schema)
+  }
+  if (hash.url && oldHash.url != hash.url) {
+    await editor.loadFromUrl(hash.url)
+  }
+  oldHash = hash
 }
 
-if (window.location.hash) {
-  loadFromHash()
-} else {
-  editor.loadFromUrl(config.examples[0].url)
-}
-
-window.addEventListener("hashchange", loadFromHash, false)
+window.addEventListener("hashchange", handleLocationHashChange, false)
 
 new FileMenu({
   container: playgroundEl.querySelector('.file-bar'),
