@@ -7,8 +7,7 @@ export const baseMap = {
 }
 
 // TODO replace with final URL
-// export const schemaUrl = 
-//   'https://covjson.org/schema.json'
+// export const schemaUrl = 'https://covjson.org/schema.json'
 export const schemaUrl = null
 
 const relUrl = basename => `coverages/${basename}.covjson`

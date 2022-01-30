@@ -194,7 +194,6 @@ export default class Editor extends L.Class {
     this.cm.setValue(val)
   }
 
-  // TODO expose in UI
   async loadFromUrl(url) {
     let text
     try {
