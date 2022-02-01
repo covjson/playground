@@ -1,0 +1,206 @@
+.playground select[disabled] {
+  cursor: not-allowed;
+}
+
+.playground {
+  position: relative;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+}
+
+.playground .map {
+  width: 50%;
+}
+
+body.fullscreen .playground .map {
+  width: 100%;
+}
+
+.playground .right {
+  width: 50%;
+  position: relative;
+  box-sizing: border-box;
+  background: #fff;
+  transition: all 200ms;
+  box-shadow: rgba(0, 0, 0, 0.1) -2px 0px 0px;
+  font-size: 15px;
+  line-height: 20px;
+}
+
+body.fullscreen .playground .right {
+  position: absolute;
+  z-index: 1001;
+  height: 40px;
+  bottom: auto;
+  right: 0;
+  border-bottom: 1px solid #d9d9d9;
+  overflow-y: hidden;
+}
+
+body.fullscreen .playground .right .top .buttons {
+  display: none;
+}
+
+@media screen and (min-width:1400px) {
+  .playground .map {
+    flex-grow: 1;
+  }
+
+  .playground .right {
+    width: 700px;
+  }
+}
+
+.playground .right .pane {
+  position: absolute;
+  top: 40px;
+  bottom: 0;
+  width: 100%;
+  overflow: auto;
+}
+
+.playground .right .CodeMirror {
+  position:absolute;
+  bottom:0;
+  right:0;
+  left:0;
+  top:0;
+  height:auto !important;
+  background:#fff;
+  font-family: Consolas, "Courier New", monospace;
+  line-height:1.5em;
+}
+
+.playground .CodeMirror-gutters {
+    background:#fff !important;
+}
+
+.playground button {
+  background: #fff;
+  font: inherit;
+  cursor: pointer;
+  margin: 0;
+  padding: 0;
+  border: none;
+  box-sizing: border-box;
+}
+
+.playground button.active {
+  background: #34495e;
+  color: #fff;
+}
+
+.playground .top {
+  background: #eee;
+}
+
+.playground .top .collapse-button {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 28px;
+  height: 40px;
+  line-height: 30px;
+  text-align: center;
+  border: none;
+}
+
+.playground .top .buttons {
+  margin-left: 28px;
+  height: 40px;
+}
+
+.playground .top .buttons button {
+  padding: 10px 15px;
+  font-weight: normal;
+  height: 40px;
+  border: 0;
+  vertical-align: top;
+}
+
+.playground .top .buttons button span.icon {
+  font-size: 16px;
+  margin-right: 5px;
+  vertical-align: middle;
+}
+
+.playground .file-bar {
+  z-index: 1001;
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 40px;
+  box-sizing: border-box;
+  line-height: 40px;
+  white-space: nowrap;
+}
+
+body.fullscreen .playground .file-bar {
+  height: 39px;
+}
+
+.playground .file-bar div.item {
+  display: inline-block;
+}
+
+.playground .file-bar div.item a.parent {
+  padding: 0 10px;
+  height: 40px;
+  display: inline-block;
+  background: #fff;
+}
+
+body.fullscreen .playground .file-bar div.item a.parent {
+  height: 39px;
+}
+
+.playground .file-bar a:hover {
+  cursor: pointer;
+  background: #34495e;
+  color: #fff;
+}
+
+.playground .file-bar div.item:hover a.parent, .playground .file-bar div.item:focus a.parent {
+  background: #34495e;
+  color: #fff;
+}
+
+.playground .file-bar div.item:hover div.children, .playground .file-bar div.item:focus div.children {
+  display: block;
+}
+
+.playground div.children {
+  display: none;
+  position: absolute;
+  margin-top: -1px;
+  right: 0;
+}
+
+.playground div.children a {
+  display: block;
+  padding: 5px 10px;
+  line-height: 20px;
+  background: #fff;
+}
+
+.playground .leaflet-control-layers-group-label {
+  max-width: 250px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+body.fullscreen .playground .leaflet-control-layers {
+  margin-top: 50px;
+}
+
+/*
+Leaflet has a rule '.leaflet-map-pane svg' which puts any svg into z-index 200.
+The tooltip of c3 is placed in z-index 10, so it would be behind the svg.
+The following fixes that.
+*/
+.playground .c3-tooltip-container {
+  z-index: 300;
+}

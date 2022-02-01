@@ -1,6 +1,6 @@
 import L from 'leaflet'
 
-class FileMenu extends L.Class {
+export default class FileMenu extends L.Class {
   constructor (options) {
     super()
     this.container = options.container
@@ -55,6 +55,3 @@ class FileMenu extends L.Class {
 }
 
 FileMenu.include(L.Mixin.Events)
-
-//work-around for transpiler bug, otherwise class cannot be referenced above
-export { FileMenu as default }

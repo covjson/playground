@@ -4,17 +4,15 @@ https://covjson.org/playground/
 
 ## Development setup
 
-```bash
-$ npm install -g jspm-cli // only once on your system
-$ npm install
-Configuration file config.js doesn't exist, create it? [yes]: yes
-$ npm start
-Starting up http-server, serving ./ on: http://0.0.0.0:8086
+```sh
+npm install
+npm run dev
 ```
 
-Now go to <http://localhost:8081>.
+Now go to the web address shown in the terminal.
 
-## Bundle creation for production use
+## Production build
 
-A final minified bundle including all JavaScript and CSS code can be created with `npm run build`.
-See the [covjson/covjson.github.io](https://github.com/covjson/covjson.github.io) reposiroty on how to include the bundle into a page.
+An optimized build can be created with `npm run build-standalone` or `npm run build-embeddable`. The standalone variant includes extra files (see `public-standalone/`) to publish the playground as a minimal website. The embeddable variant assumes that the playground is embedded in an existing website and omits those files.
+
+See the [covjson/covjson.github.io](https://github.com/covjson/covjson.github.io) repository on how to embed the playground in an existing website.
