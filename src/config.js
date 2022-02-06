@@ -1,10 +1,7 @@
+export const BingMapsApiKey = 'AjAVy4nLckUAUX7gML0AAT4ym6XLYoGCn_6H9mi5UY9fuZyWx3N3wIDcIx5VESHP'
+
 export const initialMapZoom = 2
 export const initialMapCenter = [10, 0]
-
-export const baseMap = {
-    url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-    attribution: 'Map data &copy; <a href="http://www.osm.org">OpenStreetMap</a>'
-}
 
 // TODO replace with final URL
 // export const schemaUrl = 'https://covjson.org/schema.json'
