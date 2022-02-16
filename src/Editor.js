@@ -115,18 +115,14 @@ export default class Editor extends L.Class {
     
     cm.on('change', () => {
       let text = cm.getValue()
-      let obj
-      try {
-        obj = JSON.parse(text)
-      } catch (e) {}
-      if (obj) {
+      if (this._getAnnotations(text).length == 0) {
         this.fire('change', {text})
       }
     })
   }
 
   _getAnnotations(text) {
-    const found = []
+    let found = []
 
     // adapted from codemirror/addon/lint/json-lint.js
     const jsonlint_ = jsonlint.parser
@@ -156,17 +152,11 @@ export default class Editor extends L.Class {
         // https://github.com/ajv-validator/ajv/issues/763
         const sourceMap = jsonSourceMap.parse(text)
         for (const error of this.ajvValidate.errors) {
-          let fromLine = 0
-          let toLine = 0
-          let fromCol = 0
-          let toCol = 1
-          if (error.instancePath !== '') {
-            const pointer = sourceMap.pointers[error.instancePath]
-            fromLine = pointer.value.line
-            toLine = pointer.valueEnd.line
-            fromCol = pointer.value.column
-            toCol = pointer.valueEnd.column
-          }
+          const pointer = sourceMap.pointers[error.instancePath]
+          let fromLine = pointer.value.line
+          let toLine = pointer.valueEnd.line
+          let fromCol = pointer.value.column
+          let toCol = pointer.valueEnd.column
           const msg = this.ajv.errorsText([error], {dataVar: ''})
           found.push({
             message: msg,
@@ -186,6 +176,8 @@ export default class Editor extends L.Class {
         to: CodeMirror.Pos(0, 0)
       })
     }
+
+    found = pruneAnnotations(found)
 
     return found;
   }
@@ -236,13 +228,51 @@ export default class Editor extends L.Class {
 
   setJsonSchema(schema) {
     this.ajv = new Ajv({
-      allErrors: false,
+      allErrors: true,
     })
     this.ajvValidate = this.ajv.compile(schema)
   }
 }
 
 Editor.include(L.Mixin.Events)
+
+function pruneAnnotations(annotations){
+  const pruned = []
+
+  // Skip JSON schema errors that are too technical to be useful,
+  // since they are typically accompanied by other more useful errors.
+  for (const annotation of annotations) {
+    const msg = annotation.message
+    if (/must match ".+" schema/.test(msg))
+      continue
+    if (/must match exactly one schema in/.test(msg))
+      continue
+    pruned.push(annotation)
+  }
+
+  // Remove annotations that "contain" other annotations.
+  // The inner annotations are usually more useful.
+  for (let i = 0; i < pruned.length; i++) {
+    const annotation = pruned[i]
+    for (let j = 0; j < pruned.length; j++) {
+      if (i == j)
+        continue
+      const other = pruned[j]
+      if (annotation.from.line < other.from.line &&
+          annotation.to.line > other.to.line) {
+        pruned.splice(i, 1)
+        i--
+        break
+      }
+    }
+  }
+
+  // Fall-back to input in case too much was pruned.
+  if (pruned.length == 0)
+    return annotations
+  
+  return pruned
+}
 
 /**
  * Indents the JSON if it is all in a single line.
