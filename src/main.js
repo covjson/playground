@@ -4,6 +4,7 @@ import 'leaflet-loading'
 import 'leaflet-loading/src/Control.Loading.css'
 
 import './leaflet-singleclick.js'
+import 'leaflet-plugins/layer/tile/Bing.js'
 
 import * as CovJSON from 'covjson-reader'
 import * as C from 'leaflet-coverage'
@@ -35,12 +36,21 @@ let map = L.map(mapEl, {
 
 L.control.scale().addTo(map)
 
-const baseLayer = L.tileLayer(config.baseMap.url, {
-    attribution: config.baseMap.attribution
-})
-baseLayer.addTo(map)
+const baseLayers = {
+  'Map': L.tileLayer(
+    'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', 
+    {
+      attribution: 'Map data &copy; <a href="http://www.osm.org">OpenStreetMap</a>',
+    }).addTo(map),
+  'Satellite': L.bingLayer(
+    config.BingMapsApiKey,
+    {
+      imagerySet: 'Aerial',
+    }
+  )
+}
 
-let layerControl = L.control.layers([], [], {collapsed: false}).addTo(map)
+let layerControl = L.control.layers(baseLayers, {}, {collapsed: false}).addTo(map)
 
 // We use ParameterSync here so that multiple coverage layers that display the same
 // parameter get synchronized in terms of their palette and extent.

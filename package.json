@@ -19,7 +19,8 @@
     "jsonlint-mod": "^1.7.6",
     "leaflet": "^1.7.1",
     "leaflet-coverage": "^0.8.0",
-    "leaflet-loading": "^0.1.24"
+    "leaflet-loading": "^0.1.24",
+    "leaflet-plugins": "^3.4.0"
   },
   "devDependencies": {
     "copy-webpack-plugin": "^10.1.0",
