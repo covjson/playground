@@ -119,6 +119,18 @@ export default class Editor extends L.Class {
         this.fire('change', {text})
       }
     })
+
+    cm.on('beforeChange', (cm, change) => {
+      if (change.origin !== 'paste')
+        return
+      if (change.from.line !== 0 || change.from.ch !== 0) 
+        return
+      if (change.to.line !== cm.lastLine()) 
+        return
+      let text = change.text.join('\n')
+      text = maybePrettifySingleLineJSON(text)
+      change.text = text.split('\n')
+    })
   }
 
   _getAnnotations(text) {
