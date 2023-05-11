@@ -3,7 +3,7 @@ export const BingMapsApiKey = 'AjAVy4nLckUAUX7gML0AAT4ym6XLYoGCn_6H9mi5UY9fuZyWx
 export const initialMapZoom = 2
 export const initialMapCenter = [10, 0]
 
-export const schemaUrl = 'https://covjson.org/schema/dev/coveragejson.json'
+export const schemaUrl = 'https://schemas.opengis.net/covjson/1.0/coveragejson.json'
 
 const relUrl = basename => `coverages/${basename}.covjson`
 export const examples = [{
