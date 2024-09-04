@@ -204,7 +204,7 @@ function isVerticalProfile (cov) {
 }
 
 function isTimeSeries (cov) {
-  return cov.domainType === C.COVJSON_POINTSERIES || cov.domainType === C.COVJSON_POLYGONSERIES
+  return cov.domainType === C.COVJSON_POINTSERIES || cov.domainType === C.COVJSON_POLYGONSERIES || cov.domainType === C.COVJSON_MULTIPOLYGONSERIES
 }
 
 function createLayer(cov, opts) {
